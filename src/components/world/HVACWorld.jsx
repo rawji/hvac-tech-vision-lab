@@ -137,7 +137,11 @@ function WorldContent({
         facing={facing}
         isMoving={isMoving}
       />
-      <ScannerReticle position={reticlePos} active={Boolean(nearby && techVisionEnabled)} />
+      <ScannerReticle
+        position={reticlePos}
+        active={Boolean(nearby && techVisionEnabled)}
+        lockOn={Boolean(nearby && techVisionEnabled)}
+      />
       <TechVisionOverlay />
       <PlayerController
         onMove={handleMove}

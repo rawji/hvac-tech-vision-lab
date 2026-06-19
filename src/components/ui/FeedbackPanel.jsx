@@ -1,4 +1,16 @@
-export default function FeedbackPanel({ result, onRestart }) {
+import { useEffect, useRef } from 'react';
+
+export default function FeedbackPanel({ result, onRestart, playIfUnlocked, sounds }) {
+  const playedRef = useRef(false);
+
+  useEffect(() => {
+    if (!result || playedRef.current || !playIfUnlocked || !sounds) return;
+    playedRef.current = true;
+    playIfUnlocked(() =>
+      result.isCorrect ? sounds.diagnosisCorrect() : sounds.diagnosisIncorrect()
+    );
+  }, [result, playIfUnlocked, sounds]);
+
   if (!result) return null;
 
   return (

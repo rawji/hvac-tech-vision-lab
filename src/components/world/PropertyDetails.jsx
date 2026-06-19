@@ -55,6 +55,22 @@ export default function PropertyDetails() {
         </mesh>
       </group>
 
+      {/* Tool bag by service van */}
+      <group position={[1.1, 0, 5.2]}>
+        <mesh position={[0, 0.18, 0]} castShadow>
+          <boxGeometry args={[0.55, 0.36, 0.35]} />
+          <meshStandardMaterial color="#78350f" roughness={0.85} />
+        </mesh>
+        <mesh position={[0, 0.42, 0]}>
+          <boxGeometry args={[0.5, 0.08, 0.3]} />
+          <meshStandardMaterial color="#92400e" />
+        </mesh>
+        <mesh position={[0.15, 0.12, 0.2]} rotation={[0.3, 0.4, 0]}>
+          <cylinderGeometry args={[0.03, 0.03, 0.45, 6]} />
+          <meshStandardMaterial color="#64748b" metalness={0.4} />
+        </mesh>
+      </group>
+
       {/* Fence */}
       {FENCE_SEGMENTS.map((seg) => (
         <mesh key={`${seg.pos.join('-')}`} position={seg.pos} castShadow>

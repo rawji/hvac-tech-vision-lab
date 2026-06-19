@@ -1,3 +1,5 @@
+import WindowGlow from './WindowGlow.jsx';
+
 export default function HouseScene() {
   return (
     <group>
@@ -37,15 +39,9 @@ export default function HouseScene() {
         <meshStandardMaterial color="#5c4033" roughness={0.8} />
       </mesh>
 
-      {/* Windows */}
-      <mesh position={[-2.1, 1.55, 0.32]}>
-        <boxGeometry args={[1.3, 0.9, 0.08]} />
-        <meshStandardMaterial color="#bae6fd" emissive="#0c4a6e" emissiveIntensity={0.12} />
-      </mesh>
-      <mesh position={[-5.2, 1.55, 0.32]}>
-        <boxGeometry args={[1.1, 0.9, 0.08]} />
-        <meshStandardMaterial color="#bae6fd" emissive="#0c4a6e" emissiveIntensity={0.12} />
-      </mesh>
+      {/* Windows with warm interior glow */}
+      <WindowGlow position={[-2.1, 1.55, 0.32]} size={[1.3, 0.9, 0.08]} />
+      <WindowGlow position={[-5.2, 1.55, 0.32]} size={[1.1, 0.9, 0.08]} />
 
       {/* Thermostat wall section */}
       <mesh position={[-2.4, 1.15, 0.28]}>

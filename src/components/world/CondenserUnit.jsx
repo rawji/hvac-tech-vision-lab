@@ -7,6 +7,7 @@ import WireframeHighlight from '../techVision/WireframeHighlight.jsx';
 import EquipmentZoneLabel from './EquipmentZoneLabel.jsx';
 import InteractableEquipment from './InteractableEquipment.jsx';
 import SpinningFan from './SpinningFan.jsx';
+import CondenserAmbient from './CondenserAmbient.jsx';
 
 export default function CondenserUnit({ equipmentHealth, onSelect, isNearby, isScanned, scanPulseTarget }) {
   const isDirty = equipmentHealth.condenserCoil === 'dirty';
@@ -49,7 +50,8 @@ export default function CondenserUnit({ equipmentHealth, onSelect, isNearby, isS
         isScanned={isScanned('condenserCoil')}
         isPulsing={scanPulseTarget === 'condenserCoil'}
       />
-      <SpinningFan position={[0, 1.28, 0]} />
+      <SpinningFan position={[0, 1.28, 0]} active />
+      <CondenserAmbient active />
       <InteractableEquipment
         id="fanMotor"
         label="Fan Motor"

@@ -14,6 +14,7 @@ import InteractionPrompt from './components/interactions/InteractionPrompt.jsx';
 import TouchMovePad from './components/interactions/TouchMovePad.jsx';
 import LoadingSplash from './components/ui/LoadingSplash.jsx';
 import ClueToast from './components/ui/ClueToast.jsx';
+import MuteToggle from './components/ui/MuteToggle.jsx';
 import QuickStartPanel from './components/ui/QuickStartPanel.jsx';
 import { getDefaultMission } from './data/missions.js';
 import {
@@ -27,8 +28,25 @@ import { shouldDismissQuickStart } from './logic/clueToast.js';
 import { useTechVisionToggle } from './components/interactions/useKeyboardControls.js';
 import { useTouchMovement } from './components/interactions/useTouchMovement.js';
 import { applyMovementDelta } from './logic/worldBounds.js';
+import { useLabAudio } from './hooks/useLabAudio.js';
+import { setCondenserHumActive } from './logic/labAudio.js';
 
 const HVACWorld = lazy(() => import('./components/world/HVACWorld.jsx'));
+
+const CONDENSER_IDS = new Set([
+  'condenser',
+  'condenserCoil',
+  'compressor',
+  'capacitor',
+  'fanMotor',
+  'contactor',
+]);
+
+function isNearCondenser(playerPosition, nearbyTarget) {
+  if (nearbyTarget && CONDENSER_IDS.has(nearbyTarget.id)) return true;
+  const [x, , z] = playerPosition;
+  return Math.hypot(x - 4, z + 1) < 4.5;
+}
 
 export default function App() {
   const [state, dispatch] = useReducer(missionReducer, initialMissionState);
@@ -37,25 +55,103 @@ export default function App() {
   const mission = getDefaultMission();
   const posRef = useRef(state.playerPosition);
   const cameraBasisRef = useRef({ forward: [0, -1], right: [1, 0] });
+  const prevNearbyId = useRef(null);
   posRef.current = state.playerPosition;
 
-  const toggleTechVision = useCallback(() => {
+  const {
+    muted,
+    unlocked,
+    unlock,
+    toggleMute,
+    playIfUnlocked,
+    sounds,
+    prevTechVision,
+    prevClueToast,
+    prevNearbyCondenser,
+  } = useLabAudio(
+    state.phase === APP_PHASE.MISSION || state.phase === APP_PHASE.COMPLETE
+  );
+
+  const toggleTechVision = useCallback(async () => {
+    await unlock();
     dispatch({ type: 'TOGGLE_TECH_VISION' });
-  }, []);
+  }, [unlock]);
 
   useTechVisionToggle(toggleTechVision, state.phase === APP_PHASE.MISSION);
 
   useEffect(() => {
     if (!state.scanPulseTarget) return undefined;
-    const timer = setTimeout(() => dispatch({ type: 'CLEAR_SCAN_PULSE' }), 600);
+    const timer = setTimeout(() => dispatch({ type: 'CLEAR_SCAN_PULSE' }), 900);
     return () => clearTimeout(timer);
   }, [state.scanPulseTarget]);
 
   useEffect(() => {
     if (!state.clueToast) return undefined;
-    const timer = setTimeout(() => dispatch({ type: 'CLEAR_CLUE_TOAST' }), 4000);
+    const timer = setTimeout(() => dispatch({ type: 'CLEAR_CLUE_TOAST' }), 4500);
     return () => clearTimeout(timer);
   }, [state.clueToast]);
+
+  useEffect(() => {
+    if (state.phase !== APP_PHASE.MISSION || !unlocked) return;
+    if (prevTechVision.current === null) {
+      prevTechVision.current = state.techVisionEnabled;
+      return;
+    }
+    if (prevTechVision.current !== state.techVisionEnabled) {
+      playIfUnlocked(() =>
+        state.techVisionEnabled ? sounds.techVisionOn() : sounds.techVisionOff()
+      );
+      prevTechVision.current = state.techVisionEnabled;
+    }
+  }, [state.techVisionEnabled, state.phase, unlocked, playIfUnlocked, sounds, prevTechVision]);
+
+  useEffect(() => {
+    if (!state.clueToast || state.clueToast === prevClueToast.current) return;
+    prevClueToast.current = state.clueToast;
+    playIfUnlocked(() => sounds.clueLogged());
+  }, [state.clueToast, playIfUnlocked, sounds, prevClueToast]);
+
+  useEffect(() => {
+    if (state.phase !== APP_PHASE.MISSION) {
+      setCondenserHumActive(false);
+      return;
+    }
+    const nearCondenser = isNearCondenser(state.playerPosition, state.nearbyTarget);
+    if (nearCondenser !== prevNearbyCondenser.current) {
+      prevNearbyCondenser.current = nearCondenser;
+      if (unlocked && !muted) {
+        setCondenserHumActive(nearCondenser);
+      }
+    }
+  }, [
+    state.playerPosition,
+    state.nearbyTarget,
+    state.phase,
+    unlocked,
+    muted,
+    prevNearbyCondenser,
+  ]);
+
+  useEffect(() => {
+    if (muted) {
+      setCondenserHumActive(false);
+    } else if (
+      unlocked &&
+      state.phase === APP_PHASE.MISSION &&
+      isNearCondenser(state.playerPosition, state.nearbyTarget)
+    ) {
+      setCondenserHumActive(true);
+    }
+  }, [muted, unlocked, state.phase, state.playerPosition, state.nearbyTarget]);
+
+  useEffect(() => {
+    if (!state.techVisionEnabled || !unlocked) return;
+    const id = state.nearbyTarget?.id ?? null;
+    if (id && id !== prevNearbyId.current) {
+      playIfUnlocked(() => sounds.scanLock());
+    }
+    prevNearbyId.current = id;
+  }, [state.nearbyTarget, state.techVisionEnabled, unlocked, playIfUnlocked, sounds]);
 
   useEffect(() => {
     if (state.phase === APP_PHASE.MISSION) {
@@ -132,12 +228,14 @@ export default function App() {
         targetId,
         equipmentHealth: mission.equipmentHealth,
       });
+      playIfUnlocked(() => sounds.scanComplete());
       setSidebarOpen(true);
     },
-    [mission.equipmentHealth, state.techVisionEnabled]
+    [mission.equipmentHealth, state.techVisionEnabled, playIfUnlocked, sounds]
   );
 
   const handleSubmitDiagnosis = () => {
+    playIfUnlocked(() => sounds.diagnosisSubmit());
     const result = evaluateDiagnosis(mission, state.selectedDiagnosis);
     dispatch({ type: 'SUBMIT_DIAGNOSIS', feedback: result });
   };
@@ -167,6 +265,8 @@ export default function App() {
         <FeedbackPanel
           result={state.feedback}
           onRestart={() => dispatch({ type: 'RESET_MISSION' })}
+          playIfUnlocked={playIfUnlocked}
+          sounds={sounds}
         />
       </div>
     );
@@ -177,6 +277,7 @@ export default function App() {
       <header className="app-header desktop-only-header">
         <h1>HVAC Technician World</h1>
         <div className="header-actions">
+          <MuteToggle muted={muted} onToggle={toggleMute} />
           <DiagnosticScannerButton
             enabled={state.techVisionEnabled}
             onToggle={toggleTechVision}
@@ -222,6 +323,8 @@ export default function App() {
             onInspect={handleInspect}
             onScan={handleScan}
             onResetView={handleResetView}
+            muted={muted}
+            onToggleMute={toggleMute}
           />
           <TouchMovePad setDirection={setDirection} />
           <ClueToast

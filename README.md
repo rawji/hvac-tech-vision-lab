@@ -52,19 +52,21 @@ npm test
 
 ## Demo Checklist
 
-Use this flow to verify the one-mission POC before a demo or GitHub Pages deploy:
+Use this flow to verify the one-mission POC before a live demo or GitHub Pages deploy:
 
-1. Start the app — `npm run dev` and open the local URL
-2. Select a technician — choose any male/female and appearance option
-3. Move to the thermostat — use WASD or arrow keys toward the house (left side)
-4. Inspect — stand near the thermostat and press **E**
-5. Enable Tech Vision — press **V** or click **Diagnostic Scanner**
-6. Scan condenser coil — walk to the outdoor condenser (right side), stand at the coil, press **F**
-7. Scan one more component — e.g. compressor or air handler (still with Tech Vision ON)
-8. Choose diagnosis — pick the most likely cause and click **Submit Diagnosis**
-9. Review feedback — confirm educational explanation and related concepts appear
+1. **Open URL** — run `npm run dev` locally or open the GitHub Pages URL
+2. **Select technician** — choose any male/female and appearance option
+3. **Start mission** — confirm the service-call scene loads (loading splash, then world)
+4. **Move toward condenser** — use WASD/arrows or the touch pad; camera should follow smoothly
+5. **Inspect equipment** — stand near the thermostat and press **E** or tap **Inspect**
+6. **Toggle Tech Vision** — press **V** or tap **Tech Vision** (optional scanner chirp after first click)
+7. **Scan at least two clues** — walk to the outdoor condenser coil and another component; press **F** or tap **Scan** with Tech Vision ON
+8. **Choose diagnosis** — open Mission Details if needed; pick the most likely cause and **Submit Diagnosis**
+9. **Review feedback** — confirm educational explanation and related concepts appear
+10. **Test Reset View** — return to mission and tap **Reset View** to restore start position
+11. **Test mute toggle** — tap 🔊/🔇; sounds should stop without breaking gameplay
 
-Optional recovery during demo: **Reset View** restores player position and camera.
+Optional recovery during demo: **Reset View** restores player position and camera. **Mute** keeps the demo quiet in shared spaces.
 
 ## Controls
 
@@ -76,8 +78,9 @@ Optional recovery during demo: **Reset View** restores player position and camer
 | F | Diagnostic scan (Tech Vision must be ON) |
 | V | Toggle Tech Vision Mode |
 | Esc | Close scan card / hide mission details (mobile) |
+| 🔊 / 🔇 | Mute or unmute procedural sound effects |
 | On-screen pad | Move on touch devices (camera-relative) |
-| World overlay buttons | Tech Vision, Inspect, Scan (mobile-friendly) |
+| World overlay buttons | Tech Vision, Inspect, Scan, Reset (mobile-friendly) |
 | Reset View | Restore player position and camera |
 
 **Inspect vs Scan:** Inspect works anytime and shows component readings. Scan with Tech Vision ON records diagnostic clues toward your diagnosis. Tech Vision reveals clues and possible causes — not the final answer.
@@ -129,10 +132,11 @@ Tech Vision visuals read equipment health data — they do not evaluate mission 
 
 - Single mission POC only
 - Stylized low-poly geometry (no external 3D models)
-- Touch movement is basic on-screen arrows; desktop keyboard is recommended
+- Touch movement uses a large on-screen pad; desktop keyboard is recommended for demos
+- Optional procedural sound (Web Audio API); mute toggle in header and world overlay
 - No backend, authentication, or cloud saves
 - No connection to 2D curriculum progress
-- Orbit camera may feel less intuitive on small screens
+- Orbit camera may feel less intuitive on small screens (follow camera is default)
 
 ## Performance Notes
 

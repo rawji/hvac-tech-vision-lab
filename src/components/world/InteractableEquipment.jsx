@@ -21,12 +21,12 @@ export default function InteractableEquipment({
   useFrame((_, delta) => {
     if (!meshRef.current) return;
     if (isPulsing) {
-      pulseRef.current = Math.min(pulseRef.current + delta * 4, 1);
+      pulseRef.current = Math.min(pulseRef.current + delta * 5, 1);
     } else {
-      pulseRef.current = Math.max(pulseRef.current - delta * 3, 0);
+      pulseRef.current = Math.max(pulseRef.current - delta * 2.5, 0);
     }
     const pulse = pulseRef.current;
-    const scale = 1 + Math.sin(pulse * Math.PI) * 0.08 * pulse;
+    const scale = 1 + Math.sin(pulse * Math.PI) * 0.12 * pulse;
     meshRef.current.scale.setScalar(scale);
   });
 
