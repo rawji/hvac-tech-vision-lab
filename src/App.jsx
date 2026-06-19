@@ -358,6 +358,9 @@ export default function App() {
               cameraResetKey={state.cameraResetKey}
               onReady={handleWorldReady}
               onNavigatingChange={setIsNavigating}
+              uiStable={Boolean(
+                state.activeScanResult || vanMenuOpen || actionMenuTargetId
+              )}
             />
           </Suspense>
           {!worldReady && (

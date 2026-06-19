@@ -54,6 +54,7 @@ function WorldContent({
   cameraResetKey,
   onReady,
   onNavigatingChange,
+  uiStable = false,
 }) {
   const posRef = useRef(playerPosition);
   const facingRef = useRef(0);
@@ -306,6 +307,7 @@ function WorldContent({
         resetKey={cameraResetKey}
         focusPosition={focusTarget?.position ?? null}
         pointerDragRef={pointerDragRef}
+        uiStable={uiStable}
       />
     </>
   );
@@ -333,6 +335,7 @@ export default function HVACWorld({
   cameraResetKey,
   onReady,
   onNavigatingChange,
+  uiStable = false,
 }) {
   const canvasStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
 
@@ -365,6 +368,7 @@ export default function HVACWorld({
             cameraResetKey={cameraResetKey}
             onReady={onReady}
             onNavigatingChange={onNavigatingChange}
+            uiStable={uiStable}
           />
         </Canvas>
       </TechVisionProvider>
