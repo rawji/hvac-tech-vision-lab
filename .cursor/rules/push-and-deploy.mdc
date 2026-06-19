@@ -1,0 +1,21 @@
+---
+description: After every git push to main, deploy GitHub Pages with npm run deploy
+alwaysApply: true
+---
+
+# Push and Deploy
+
+When the user asks to **push** (or when you push changes to `main` on their behalf):
+
+1. Run tests if code changed (`npm test`).
+2. Commit if needed (only when explicitly requested).
+3. `git push origin main`
+4. **Always run `npm run deploy` immediately after a successful push** unless the user explicitly says not to deploy.
+
+After deploy, confirm:
+- Commit hash pushed
+- Test result (if run)
+- Build/deploy result
+- Live URL: https://rawji.github.io/hvac-tech-vision-lab/
+
+Do not skip deploy after push. A GitHub Actions workflow also deploys on push to `main`; local `npm run deploy` keeps Pages in sync immediately without waiting for CI.
