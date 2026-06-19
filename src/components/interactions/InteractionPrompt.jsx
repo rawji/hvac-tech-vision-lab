@@ -6,17 +6,30 @@ export default function InteractionPrompt({
 }) {
   if (!target) return null;
 
+  const inRange = target.inRange !== false;
+
   return (
     <div className="interaction-prompt desktop-only">
       <p>
-        <strong>{target.label}</strong> nearby
+        <strong>{target.label}</strong>
+        {inRange ? ' ready' : ' selected — move closer'}
       </p>
       <div className="prompt-actions">
-        <button type="button" className="btn btn-small" onClick={() => onInspect(target.id)}>
+        <button
+          type="button"
+          className="btn btn-small"
+          onClick={() => onInspect(target.id)}
+          disabled={!inRange}
+        >
           Inspect (E)
         </button>
         {techVisionEnabled ? (
-          <button type="button" className="btn btn-small btn-accent" onClick={() => onScan(target.id)}>
+          <button
+            type="button"
+            className="btn btn-small btn-accent"
+            onClick={() => onScan(target.id)}
+            disabled={!inRange}
+          >
             Scan (F)
           </button>
         ) : (

@@ -2,8 +2,8 @@ import ComponentTag from '../techVision/ComponentTag.jsx';
 import EquipmentZoneLabel from './EquipmentZoneLabel.jsx';
 import InteractableEquipment from './InteractableEquipment.jsx';
 
-export default function AirHandlerZone({ equipmentHealth, onSelect, isNearby, isScanned, scanPulseTarget }) {
-  const atHandler = ['airHandler', 'filter'].includes(isNearby);
+export default function AirHandlerZone({ equipmentHealth, onSelect, equipmentState, proximityId }) {
+  const atHandler = ['airHandler', 'filter'].includes(proximityId);
 
   return (
     <group position={[-4.5, 0, -1]}>
@@ -15,9 +15,7 @@ export default function AirHandlerZone({ equipmentHealth, onSelect, isNearby, is
         size={[0.9, 1.2, 0.9]}
         color="#64748b"
         onSelect={onSelect}
-        isNearby={isNearby === 'airHandler'}
-        isScanned={isScanned('airHandler')}
-        isPulsing={scanPulseTarget === 'airHandler'}
+        {...equipmentState('airHandler')}
       />
       <InteractableEquipment
         id="filter"
@@ -26,10 +24,8 @@ export default function AirHandlerZone({ equipmentHealth, onSelect, isNearby, is
         size={[0.7, 0.08, 0.5]}
         color="#fbbf24"
         onSelect={onSelect}
-        isNearby={isNearby === 'filter'}
-        isScanned={isScanned('filter')}
         showMarker={false}
-        isPulsing={scanPulseTarget === 'filter'}
+        {...equipmentState('filter')}
       />
       <ComponentTag
         label="Indoor Airflow"

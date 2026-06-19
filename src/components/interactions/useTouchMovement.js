@@ -10,6 +10,7 @@ const DIRECTIONS = {
 
 export function useTouchMovement(onMove, enabled = true, cameraBasisRef) {
   const activeRef = useRef(new Set());
+  const velocityRef = useRef({ x: 0, z: 0 });
 
   const setDirection = (name, active) => {
     if (active) activeRef.current.add(name);
@@ -34,16 +35,36 @@ export function useTouchMovement(onMove, enabled = true, cameraBasisRef) {
         iz += dz;
       }
 
-      if (ix !== 0 || iz !== 0) {
+      const hasInput = ix !== 0 || iz !== 0;
+      let mx = 0;
+      let mz = 0;
+
+      if (hasInput) {
         const basis = cameraBasisRef?.current;
-        let mx = ix;
-        let mz = iz;
+        mx = ix;
+        mz = iz;
         if (basis) {
           mx = basis.right[0] * ix + basis.forward[0] * (-iz);
           mz = basis.right[1] * ix + basis.forward[1] * (-iz);
         }
         const len = Math.hypot(mx, mz) || 1;
-        onMove([(mx / len) * MOVE_SPEED * delta, (mz / len) * MOVE_SPEED * delta]);
+        mx /= len;
+        mz /= len;
+      }
+
+      const accel = hasInput ? 14 : 18;
+      velocityRef.current.x += (mx * (hasInput ? 1 : 0) - velocityRef.current.x) * Math.min(accel * delta, 1);
+      velocityRef.current.z += (mz * (hasInput ? 1 : 0) - velocityRef.current.z) * Math.min(accel * delta, 1);
+
+      const speed = Math.hypot(velocityRef.current.x, velocityRef.current.z);
+      if (speed > 0.02) {
+        onMove([
+          velocityRef.current.x * MOVE_SPEED * delta,
+          velocityRef.current.z * MOVE_SPEED * delta,
+        ]);
+      } else if (!hasInput) {
+        velocityRef.current.x = 0;
+        velocityRef.current.z = 0;
       }
 
       frameId = requestAnimationFrame(tick);

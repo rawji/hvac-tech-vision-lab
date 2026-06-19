@@ -13,6 +13,7 @@ const KEYS = {
 const forward = new THREE.Vector3();
 const right = new THREE.Vector3();
 const up = new THREE.Vector3(0, 1, 0);
+const velocity = new THREE.Vector2();
 
 export default function PlayerController({
   onMove,
@@ -23,6 +24,7 @@ export default function PlayerController({
 }) {
   const keysRef = useRef(new Set());
   const movingRef = useRef(false);
+  const facingRef = useRef(0);
   const { camera } = useThree();
 
   useEffect(() => {
@@ -82,7 +84,22 @@ export default function PlayerController({
       mz += right.z;
     }
 
-    if (mx === 0 && mz === 0) {
+    const hasInput = mx !== 0 || mz !== 0;
+    const targetSpeed = hasInput ? 1 : 0;
+
+    if (hasInput) {
+      const len = Math.hypot(mx, mz) || 1;
+      mx /= len;
+      mz /= len;
+    }
+
+    const accel = hasInput ? 14 : 18;
+    velocity.x += (mx * targetSpeed - velocity.x) * Math.min(accel * delta, 1);
+    velocity.y += (mz * targetSpeed - velocity.y) * Math.min(accel * delta, 1);
+
+    const speed = Math.hypot(velocity.x, velocity.y);
+    if (speed < 0.02 && !hasInput) {
+      velocity.set(0, 0);
       if (movingRef.current) {
         movingRef.current = false;
         onMovingChange?.(false);
@@ -90,11 +107,13 @@ export default function PlayerController({
       return;
     }
 
-    const len = Math.hypot(mx, mz) || 1;
-    const dx = (mx / len) * MOVE_SPEED * delta;
-    const dz = (mz / len) * MOVE_SPEED * delta;
+    const dx = velocity.x * MOVE_SPEED * delta;
+    const dz = velocity.y * MOVE_SPEED * delta;
+    const moveAngle = Math.atan2(dx, dz);
 
-    onFacingChange?.(Math.atan2(dx, dz));
+    facingRef.current += (moveAngle - facingRef.current) * Math.min(12 * delta, 1);
+    onFacingChange?.(facingRef.current);
+
     if (!movingRef.current) {
       movingRef.current = true;
       onMovingChange?.(true);

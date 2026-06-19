@@ -791,6 +791,38 @@ h3 {
   bottom: 1rem;
   z-index: 14;
   max-width: min(420px, calc(100% - 2rem));
+  animation: scan-card-in 0.28s ease-out;
+}
+
+@keyframes scan-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.context-notice {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  color: #fbbf24;
+}
+
+.compact-selection {
+  color: var(--accent);
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.world-primary-action.disabled,
+.world-action-btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .sidebar.immersive .mission-panel,
@@ -1106,8 +1138,27 @@ h3 {
   max-width: min(92vw, 520px);
 }
 
-.clue-toast-enter {
-  animation: clue-toast-in 0.35s ease-out;
+.interaction-notice-toast {
+  position: absolute;
+  top: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 13;
+  background: rgba(69, 26, 3, 0.92);
+  border: 1px solid #fbbf24;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  color: #fef3c7;
+  animation: clue-toast-in 0.28s ease-out;
+  max-width: min(92vw, 420px);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .interaction-notice-toast {
+    top: 4.5rem;
+  }
 }
 
 .clue-toast-icon {

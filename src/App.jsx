@@ -86,6 +86,18 @@ export default function App() {
   }, [state.scanPulseTarget]);
 
   useEffect(() => {
+    if (!state.inspectPulseTarget) return undefined;
+    const timer = setTimeout(() => dispatch({ type: 'CLEAR_INSPECT_PULSE' }), 500);
+    return () => clearTimeout(timer);
+  }, [state.inspectPulseTarget]);
+
+  useEffect(() => {
+    if (!state.interactionNotice) return undefined;
+    const timer = setTimeout(() => dispatch({ type: 'CLEAR_INTERACTION_NOTICE' }), 2500);
+    return () => clearTimeout(timer);
+  }, [state.interactionNotice]);
+
+  useEffect(() => {
     if (!state.clueToast) return undefined;
     const timer = setTimeout(() => dispatch({ type: 'CLEAR_CLUE_TOAST' }), 4500);
     return () => clearTimeout(timer);
@@ -204,8 +216,19 @@ export default function App() {
     cameraBasisRef
   );
 
-  const handleNearbyChange = useCallback((target) => {
-    dispatch({ type: 'SET_NEARBY_TARGET', target });
+  const handleActiveTargetChange = useCallback((activeTarget) => {
+    dispatch({ type: 'SET_NEARBY_TARGET', target: activeTarget });
+  }, []);
+
+  const handleSelectTarget = useCallback((targetId) => {
+    dispatch({ type: 'SELECT_TARGET', targetId });
+  }, []);
+
+  const handleScanBlocked = useCallback(() => {
+    dispatch({
+      type: 'SHOW_INTERACTION_NOTICE',
+      message: 'Enable Tech Vision to scan equipment',
+    });
   }, []);
 
   const handleInspect = useCallback(
@@ -215,23 +238,26 @@ export default function App() {
         targetId,
         equipmentHealth: mission.equipmentHealth,
       });
-      setSidebarOpen(true);
+      setSidebarOpen(false);
     },
     [mission.equipmentHealth]
   );
 
   const handleScan = useCallback(
     (targetId) => {
-      if (!state.techVisionEnabled) return;
+      if (!state.techVisionEnabled) {
+        handleScanBlocked();
+        return;
+      }
       dispatch({
         type: 'SCAN_TARGET',
         targetId,
         equipmentHealth: mission.equipmentHealth,
       });
       playIfUnlocked(() => sounds.scanComplete());
-      setSidebarOpen(true);
+      setSidebarOpen(false);
     },
-    [mission.equipmentHealth, state.techVisionEnabled, playIfUnlocked, sounds]
+    [mission.equipmentHealth, state.techVisionEnabled, playIfUnlocked, sounds, handleScanBlocked]
   );
 
   const handleSubmitDiagnosis = () => {
@@ -289,6 +315,8 @@ export default function App() {
         mission={mission}
         scannedCount={state.scannedTargets.length}
         techVisionEnabled={state.techVisionEnabled}
+        activeTarget={state.nearbyTarget}
+        selectedTargetId={state.selectedTargetId}
       />
 
       <div className="mission-layout world-first">
@@ -298,12 +326,17 @@ export default function App() {
               equipmentHealth={mission.equipmentHealth}
               playerPosition={state.playerPosition}
               onMove={handleMove}
-              onNearbyChange={handleNearbyChange}
+              onActiveTargetChange={handleActiveTargetChange}
+              onSelectTarget={handleSelectTarget}
               onInspect={handleInspect}
               onScan={handleScan}
+              onScanBlocked={handleScanBlocked}
               techVisionEnabled={state.techVisionEnabled}
               scannedTargets={state.scannedTargets}
+              inspectedTargets={state.inspectedTargets}
+              selectedTargetId={state.selectedTargetId}
               scanPulseTarget={state.scanPulseTarget}
+              inspectPulseTarget={state.inspectPulseTarget}
               technician={state.selectedTechnician}
               appearance={state.selectedAppearance}
               cameraResetKey={state.cameraResetKey}
@@ -317,7 +350,8 @@ export default function App() {
             </div>
           )}
           <WorldControlsOverlay
-            nearbyTarget={state.nearbyTarget}
+            activeTarget={state.nearbyTarget}
+            selectedTargetId={state.selectedTargetId}
             techVisionEnabled={state.techVisionEnabled}
             onToggleTechVision={toggleTechVision}
             onInspect={handleInspect}
@@ -325,12 +359,18 @@ export default function App() {
             onResetView={handleResetView}
             muted={muted}
             onToggleMute={toggleMute}
+            interactionNotice={state.interactionNotice}
           />
           <TouchMovePad setDirection={setDirection} />
           <ClueToast
             message={state.clueToast}
             onDismiss={() => dispatch({ type: 'CLEAR_CLUE_TOAST' })}
           />
+          {state.interactionNotice && (
+            <div className="interaction-notice-toast" role="status">
+              {state.interactionNotice}
+            </div>
+          )}
           {state.activeScanResult && (
             <div className="scan-card-overlay">
               <ScanCard

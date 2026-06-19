@@ -16,6 +16,7 @@ export const initialMissionState = {
   currentMissionId: null,
   playerPosition: [0, 0, 4],
   nearbyTarget: null,
+  selectedTargetId: null,
   selectedScanTarget: null,
   activeScanResult: null,
   interactionMode: null,
@@ -30,6 +31,8 @@ export const initialMissionState = {
   cameraResetKey: 0,
   clueToast: null,
   scanPulseTarget: null,
+  inspectPulseTarget: null,
+  interactionNotice: null,
 };
 
 export function missionReducer(state, action) {
@@ -52,6 +55,19 @@ export function missionReducer(state, action) {
     case 'SET_NEARBY_TARGET':
       return { ...state, nearbyTarget: action.target };
 
+    case 'SELECT_TARGET':
+      return {
+        ...state,
+        selectedTargetId: action.targetId,
+        interactionNotice: null,
+      };
+
+    case 'SHOW_INTERACTION_NOTICE':
+      return { ...state, interactionNotice: action.message };
+
+    case 'CLEAR_INTERACTION_NOTICE':
+      return { ...state, interactionNotice: null };
+
     case 'TOGGLE_TECH_VISION': {
       const enabled = action.enabled ?? !state.techVisionEnabled;
       return {
@@ -72,9 +88,11 @@ export function missionReducer(state, action) {
       return {
         ...state,
         selectedScanTarget: action.targetId,
+        selectedTargetId: action.targetId,
         activeScanResult: scanResult,
         interactionMode: 'inspect',
         inspectedTargets,
+        inspectPulseTarget: action.targetId,
       };
     }
 
@@ -92,6 +110,7 @@ export function missionReducer(state, action) {
       return {
         ...state,
         selectedScanTarget: action.targetId,
+        selectedTargetId: action.targetId,
         activeScanResult: scanResult,
         interactionMode: 'scan',
         scannedTargets,
@@ -100,6 +119,9 @@ export function missionReducer(state, action) {
         scanPulseTarget: action.targetId,
       };
     }
+
+    case 'CLEAR_INSPECT_PULSE':
+      return { ...state, inspectPulseTarget: null };
 
     case 'CLEAR_CLUE_TOAST':
       return { ...state, clueToast: null };
