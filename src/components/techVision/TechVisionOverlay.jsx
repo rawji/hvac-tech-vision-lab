@@ -1,5 +1,6 @@
 import DiagnosticGrid from './DiagnosticGrid.jsx';
 import { useTechVision } from './TechVisionProvider.jsx';
+import { TECH_VISION } from '../../data/worldPalette.js';
 
 export default function TechVisionOverlay() {
   const { enabled, bootProgress } = useTechVision();
@@ -8,7 +9,7 @@ export default function TechVisionOverlay() {
     <>
       <DiagnosticGrid size={14} position={[0, 0.03, 0]} />
       {enabled && (
-        <fog attach="fog" args={['#0a1628', 14 + bootProgress * 4, 32 + bootProgress * 6]} />
+        <fog attach="fog" args={[TECH_VISION.fog, 12 + bootProgress * 5, 30 + bootProgress * 8]} />
       )}
     </>
   );

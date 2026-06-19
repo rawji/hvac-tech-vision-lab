@@ -1,11 +1,12 @@
 import ComponentTag from '../techVision/ComponentTag.jsx';
 import EquipmentZoneLabel from './EquipmentZoneLabel.jsx';
 import InteractableEquipment from './InteractableEquipment.jsx';
+import ThermostatScreen from './ThermostatScreen.jsx';
 
 export default function ThermostatMarker({ equipmentHealth, onSelect, equipmentState, proximityId }) {
   return (
     <group position={[-2.4, 1.15, 0.35]}>
-      <EquipmentZoneLabel label="Thermostat" position={[0, 0.55, 0]} accent="#a78bfa" />
+      <EquipmentZoneLabel label="Thermostat" position={[0, 0.55, 0]} accent="#c4b5fd" />
       <InteractableEquipment
         id="thermostat"
         label="Thermostat"
@@ -15,6 +16,7 @@ export default function ThermostatMarker({ equipmentHealth, onSelect, equipmentS
         onSelect={onSelect}
         {...equipmentState('thermostat')}
       />
+      <ThermostatScreen />
       <ComponentTag
         label="Thermostat"
         componentKey="thermostat"

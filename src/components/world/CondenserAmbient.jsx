@@ -18,7 +18,7 @@ export default function CondenserAmbient({ active = true }) {
         ORIGIN[1] + phase * 0.9,
         ORIGIN[2] + 0.35 + Math.cos(t * 0.5 + i) * 0.12
       );
-      child.material.opacity = 0.08 + (1 - phase) * 0.14;
+      child.material.opacity = 0.1 + (1 - phase) * 0.16 + Math.sin(t * 2 + i) * 0.03;
       child.scale.setScalar(0.6 + (1 - phase) * 0.5);
     });
   });

@@ -31,6 +31,7 @@ import { useProximityInteraction } from '../interactions/useProximityInteraction
 import { applyMovementDelta } from '../../logic/worldBounds.js';
 
 import { resolveInteractionTarget, getTargetById } from '../../logic/interactionTarget.js';
+import { PALETTE, NORMAL_LIGHT, TECH_VISION } from '../../data/worldPalette.js';
 
 
 
@@ -324,13 +325,27 @@ function WorldContent({
 
     <>
 
-      <ambientLight intensity={0.45} />
-
-      <directionalLight castShadow position={[10, 14, 6]} intensity={1.15} shadow-mapSize={[1024, 1024]} />
-
-      <hemisphereLight args={['#bae6fd', '#3f6f3a', 0.35]} />
-
-      <Sky sunPosition={[100, 12, 80]} turbidity={0.4} rayleigh={0.8} mieCoefficient={0.005} />
+      <ambientLight intensity={techVisionEnabled ? TECH_VISION.ambient : NORMAL_LIGHT.ambient} />
+      <directionalLight
+        castShadow
+        position={[10, 14, 6]}
+        intensity={techVisionEnabled ? 1.05 : 1.2}
+        color={techVisionEnabled ? TECH_VISION.keyLight : NORMAL_LIGHT.keyLight}
+        shadow-mapSize={[1024, 1024]}
+      />
+      <hemisphereLight
+        args={[
+          techVisionEnabled ? '#93c5fd' : NORMAL_LIGHT.hemiSky,
+          techVisionEnabled ? '#1e293b' : NORMAL_LIGHT.hemiGround,
+          techVisionEnabled ? 0.32 : 0.42,
+        ]}
+      />
+      <Sky
+        sunPosition={[100, 14, 80]}
+        turbidity={techVisionEnabled ? 0.55 : 0.35}
+        rayleigh={techVisionEnabled ? 1.1 : 0.65}
+        mieCoefficient={0.005}
+      />
 
       <HouseScene />
 
@@ -454,9 +469,9 @@ export default function HVACWorld({
 
         <Canvas shadows camera={DEFAULT_CAMERA} style={canvasStyle}>
 
-          <color attach="background" args={['#87CEEB']} />
+          <color attach="background" args={[PALETTE.sky]} />
 
-          <fog attach="fog" args={['#b6d4ea', 22, 48]} />
+          {!techVisionEnabled && <fog attach="fog" args={[PALETTE.fog, 22, 50]} />}
 
           <WorldContent
 

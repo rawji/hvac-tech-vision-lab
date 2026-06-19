@@ -114,8 +114,18 @@ export default function InteractableEquipment({
         </mesh>
       )}
 
-      {(isSelected || isNearby) && (
-        <mesh ref={outlineRef} position={[0, 0, 0]}>
+      <mesh scale={[1.03, 1.03, 1.03]} raycast={() => null}>
+        <boxGeometry args={size} />
+        <meshBasicMaterial
+          color={highlighted || isScanned ? ringColor : '#1c1917'}
+          transparent
+          opacity={highlighted ? 0.55 : isScanned ? 0.35 : 0.28}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {(isSelected || isNearby || isPulsing) && (
+        <mesh ref={outlineRef} position={[0, 0, 0]} raycast={() => null}>
           <boxGeometry args={size} />
           <meshBasicMaterial
             color={isSelected ? '#fbbf24' : '#38bdf8'}
@@ -139,7 +149,8 @@ export default function InteractableEquipment({
           color={color}
           emissive={emissive}
           emissiveIntensity={emissiveIntensity}
-          roughness={0.75}
+          roughness={0.72}
+          metalness={0.08}
         />
       </mesh>
 

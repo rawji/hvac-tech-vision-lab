@@ -12,8 +12,9 @@ export default function DiagnosticGrid({ size = 14, position = [0, 0.03, 0] }) {
     if (!enabled) return;
 
     const sweep = bootProgress < 1 ? bootProgress : 1;
-    const pulse = 0.12 + Math.sin(state.clock.elapsedTime * 2) * 0.04;
-    ref.current.material.opacity = pulse * (0.35 + sweep * 0.65);
+    const pulse = 0.16 + Math.sin(state.clock.elapsedTime * 1.8) * 0.05;
+    ref.current.material.opacity = pulse * (0.4 + sweep * 0.55);
+    ref.current.material.color.setHex(sweep >= 1 ? 0x22d3ee : 0x38bdf8);
     ref.current.scale.set(0.6 + sweep * 0.4, 1, 0.6 + sweep * 0.4);
   });
 

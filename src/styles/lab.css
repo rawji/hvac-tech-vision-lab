@@ -332,7 +332,119 @@ h3 {
 .scan-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.clipboard-card {
+  background: linear-gradient(180deg, #f8fafc 0%, #e8eef4 100%);
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.45);
+  padding: 0;
+  overflow: hidden;
+}
+
+.clipboard-tab {
+  background: #334155;
+  color: #f8fafc;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.85rem;
+}
+
+.clipboard-card .scan-card-header {
+  padding: 0.75rem 0.85rem 0;
+}
+
+.clipboard-heading h3 {
+  margin: 0.15rem 0 0;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.clipboard-meta {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.clipboard-close {
+  color: #475569;
+}
+
+.clipboard-card .scan-mode-note {
+  margin: 0.5rem 0.85rem 0;
+  font-size: 0.82rem;
+}
+
+.clipboard-card .inspect-note {
+  color: #7c3aed;
+}
+
+.clipboard-card .scan-note {
+  color: #0369a1;
+}
+
+.clipboard-divider {
+  height: 1px;
+  background: #cbd5e1;
+  margin: 0.65rem 0.85rem 0;
+}
+
+.clipboard-fields {
+  padding: 0 0.85rem;
+}
+
+.clipboard-card .scan-field {
+  border-bottom-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.clipboard-card .field-label {
+  color: #64748b;
+  font-size: 0.78rem;
+}
+
+.clipboard-card .field-value {
+  font-weight: 600;
+}
+
+.clipboard-observed {
+  padding: 0 0.85rem;
+}
+
+.clipboard-card .observed-section h4 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+}
+
+.clipboard-card .observed-item {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.clipboard-card .observed-condition {
+  color: #0f172a;
+}
+
+.clipboard-card .possible-label {
+  color: #64748b;
+}
+
+.clipboard-footer {
+  margin: 0.75rem 0.85rem 0.85rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed #cbd5e1;
+  font-size: 0.78rem;
+  color: #64748b;
+  font-style: italic;
 }
 
 .ascii-header pre,
@@ -1198,7 +1310,11 @@ h3 {
 }
 
 .world-canvas.tech-vision-active {
-  box-shadow: inset 0 0 0 2px rgba(56, 189, 248, 0.25);
+  box-shadow: inset 0 0 0 2px rgba(56, 189, 248, 0.28);
+}
+
+.world-canvas:not(.tech-vision-active) {
+  box-shadow: inset 0 0 80px rgba(251, 191, 36, 0.04);
 }
 
 .world-canvas.tech-vision-active::after {
