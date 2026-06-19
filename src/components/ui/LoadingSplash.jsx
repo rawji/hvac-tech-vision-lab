@@ -2,8 +2,8 @@ export default function LoadingSplash({ message = 'Preparing service-call enviro
   return (
     <div className="loading-splash" role="status" aria-live="polite">
       <div className="loading-card">
-        <p className="loading-eyebrow">HVAC Tech Vision Lab</p>
-        <h2>Loading Technician World</h2>
+        <p className="loading-eyebrow">HVAC Technician World</p>
+        <h2>Preparing the call</h2>
         <p className="loading-message">{message}</p>
         <div className="loading-bar" aria-hidden="true">
           <div

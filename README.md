@@ -1,26 +1,34 @@
-# HVAC Tech Vision Lab
+# HVAC Technician World
 
-Isolated WebGL proof-of-concept for a browser-based 3D HVAC technician training world with an optional **Tech Vision Mode** diagnostic overlay.
+Browser-native 3D service-call practice — a compact, handcrafted neighborhood diorama where you respond to HVAC calls, inspect equipment, and reason through diagnoses with optional **Tech Vision** overlay.
 
 > **Learn it in 2D. Practice it in 3D. Diagnose it with Tech Vision.**
 
-This repository is intentionally separate from the existing 2D HVAC/EPA curriculum app. It does not import curriculum content, EPA study sessions, or curriculum data files.
+This repo is separate from the 2D HVAC/EPA curriculum app. It does not import curriculum content, EPA study sessions, or curriculum data files.
+
+## Design Direction
+
+**Messenger-inspired, not a clone.** The quality bar is [Messenger by Abeto](https://messenger.abeto.co/) — effortless click-to-move, small dense world, minimal UI friction, illustration-like polish — translated into an HVAC field-service experience.
+
+*“Messenger, but instead of delivering mail on a tiny planet, you are an HVAC technician responding to service calls in a living neighborhood.”*
+
+Player goal: *“What should I inspect next?”* — not *“What button do I press?”*
 
 ## Product Vision
 
 Three connected but independent experiences:
 
-1. **HVAC Curriculum 2D** — structured lessons and assessments (existing separate project)
-2. **HVAC Technician World 3D** — applied service-call practice (this repo)
-3. **Tech Vision Mode** — optional diagnostic visualization overlay inside the 3D world
+1. **HVAC Curriculum 2D** — structured lessons (separate project)
+2. **HVAC Technician World** — applied service-call practice (this repo)
+3. **Tech Vision** — optional diagnostic overlay inside the 3D world
 
 ## Purpose
 
-Prove one focused learning loop:
+One focused field-service loop:
 
-Walk to equipment → Activate Tech Vision → Scan clues → Reason through causes → Choose diagnosis → Receive HVAC explanation
+Click to navigate → Inspect on arrival → Enable Tech Vision → Scan clues → Reason through causes → Choose diagnosis → Receive HVAC explanation
 
-First mission: **No Cooling Call: Dirty Condenser Coil**
+First mission: **Service Call: No Cooling Reported** (dirty condenser coil scenario)
 
 ## Setup
 
@@ -35,7 +43,7 @@ npm install
 npm run dev
 ```
 
-Open the URL shown in the terminal (typically `http://localhost:5173`).
+Open the URL shown in the terminal (typically `http://localhost:5173/hvac-tech-vision-lab/` in production builds, or `http://localhost:5173` in dev).
 
 ## Build
 
@@ -50,68 +58,57 @@ npm run preview
 npm test
 ```
 
+## Deploy
+
+```bash
+npm run deploy
+```
+
+Pushes `dist/` to the `gh-pages` branch. Also deploys automatically on push to `main` via GitHub Actions.
+
+Live demo: https://rawji.github.io/hvac-tech-vision-lab/
+
 ## Demo Checklist
 
-Use this flow to verify the one-mission POC before a live demo or GitHub Pages deploy:
-
-1. **Open URL** — run `npm run dev` locally or open the GitHub Pages URL
-2. **Select technician** — choose any male/female and appearance option
-3. **Start mission** — confirm the service-call scene loads (loading splash, then world)
-4. **Move toward condenser** — use WASD/arrows or the touch pad; camera should follow smoothly
-5. **Inspect equipment** — stand near the thermostat and press **E** or tap **Inspect**
-6. **Toggle Tech Vision** — press **V** or tap **Tech Vision** (optional scanner chirp after first click)
-7. **Scan at least two clues** — walk to the outdoor condenser coil and another component; press **F** or tap **Scan** with Tech Vision ON
-8. **Choose diagnosis** — open Mission Details if needed; pick the most likely cause and **Submit Diagnosis**
-9. **Review feedback** — confirm educational explanation and related concepts appear
-10. **Test Reset View** — return to mission and tap **Reset View** to restore start position
-11. **Test mute toggle** — tap 🔊/🔇; sounds should stop without breaking gameplay
-
-Optional recovery during demo: **Reset View** restores player position and camera. **Mute** keeps the demo quiet in shared spaces.
+1. **Open URL** — local dev or GitHub Pages
+2. **Select technician** — choose appearance on the service-call roster
+3. **Start mission** — loading splash, then neighborhood diorama loads
+4. **Click to move** — click yard, path, or driveway; technician walks smoothly
+5. **Click equipment** — click condenser or thermostat; inspection card opens on arrival
+6. **Tech Vision** — tap **Tech Vision** button; cooler diagnostic overlay activates
+7. **Scan clues** — use **Scan** from the action menu with Tech Vision ON (at least two components)
+8. **Diagnose** — pick the most likely cause and submit
+9. **Review feedback** — HVAC explanation and related concepts
+10. **Camera** — drag to orbit (360°), scroll/pinch zoom; **Reset View** restores default
+11. **Mute** — toggle sound in the world overlay
 
 ## Controls
 
 | Input | Action |
 |-------|--------|
-| WASD / Arrow keys | Move technician (camera-relative) |
-| Right-drag on scene | Gently adjust camera angle |
-| E | Inspect nearby equipment (normal mode) |
-| F | Diagnostic scan (Tech Vision must be ON) |
-| V | Toggle Tech Vision Mode |
-| Esc | Close scan card / hide mission details (mobile) |
-| 🔊 / 🔇 | Mute or unmute procedural sound effects |
-| On-screen pad | Move on touch devices (camera-relative) |
-| World overlay buttons | Tech Vision, Inspect, Scan, Reset (mobile-friendly) |
-| Reset View | Restore player position and camera |
+| Click / tap ground | Walk to destination |
+| Click / tap equipment | Walk to equipment; inspection opens on arrival |
+| Drag on scene | Orbit camera (holds your chosen angle) |
+| Scroll / pinch | Zoom camera |
+| Action menu | Inspect, Scan, View Notes |
+| Tech Vision button | Toggle diagnostic overlay |
+| Reset View | Restore start position and camera |
+| Esc | Close panels |
+| 🔊 / 🔇 | Mute procedural sound |
 
-**Inspect vs Scan:** Inspect works anytime and shows component readings. Scan with Tech Vision ON records diagnostic clues toward your diagnosis. Tech Vision reveals clues and possible causes — not the final answer.
+**Optional keyboard (accessibility):** V = Tech Vision, E = inspect nearby, F = scan nearby
 
-**Desktop recommended** for the best experience. Mobile uses a large touch pad, world overlay action buttons, and a collapsible mission details drawer.
+**Mission 1 is fully playable with mouse only (desktop) or touch only (mobile).**
 
 ## Tech Vision Mode
 
-Tech Vision is an optional diagnostic overlay — not an answer key.
-
-When enabled:
-
-- Wireframe highlights and diagnostic grid
-- Component tags with status colors
-- Thermal, airflow, and refrigerant flow overlays
-- ASCII-style scan cards with observed conditions and possible causes
-
-Status colors:
-
-- Green = normal
-- Yellow = warning
-- Red = fault
-- Blue = informational
-
-Labels and text accompany colors for accessibility.
+Optional diagnostic layer — not an answer key. Cooler palette, wireframe highlights, component tags, thermal/airflow overlays, clipboard-style scan readouts with observed conditions and possible causes.
 
 ## Mission Summary
 
-**Customer complaint:** "The system runs, but the house is not cooling well."
+**Customer complaint:** Homeowner reports the system runs but the house is not cooling well.
 
-Investigate the residential service-call scene, scan equipment, gather clues (high head pressure, restricted outdoor airflow, dirty condenser coil indicators), and select the most likely diagnosis.
+Investigate the residential scene, inspect and scan equipment, gather clues (elevated head pressure, restricted outdoor airflow, dirty coil indicators), and select the most likely diagnosis.
 
 ## Architecture
 
@@ -121,49 +118,28 @@ src/
   logic/         Mission state, status mapping, diagnosis evaluation
   components/
     ui/          HTML panels and HUD
-    world/       Normal 3D scene
+    world/       3D service-call scene
     techVision/  Diagnostic overlay visuals only
-    interactions/ Proximity, keyboard, prompts
+    interactions/ Proximity, navigation helpers
 ```
 
-Tech Vision visuals read equipment health data — they do not evaluate mission answers.
+Diagnosis logic stays in `logic/`. Tech Vision reads equipment health — it does not evaluate answers.
 
 ## Known Limitations
 
-- Single mission POC only
+- Single mission POC (Mission 1 neighborhood diorama)
 - Stylized low-poly geometry (no external 3D models)
-- Touch movement uses a large on-screen pad; desktop keyboard is recommended for demos
-- Optional procedural sound (Web Audio API); mute toggle in header and world overlay
-- No backend, authentication, or cloud saves
+- Three.js bundle ~1 MB JS (gzip ~280 KB) — normal for WebGL + R3F
+- No backend, auth, or cloud saves
 - No connection to 2D curriculum progress
-- Orbit camera may feel less intuitive on small screens (follow camera is default)
-
-## Performance Notes
-
-- **Three.js bundle size is expected** — production build is ~1 MB JS (gzip ~287 KB). This is normal for WebGL + React Three Fiber.
-- **Code splitting recommended later** — lazy-load the 3D world route/chunk before GitHub Pages production traffic.
-- **Mobile performance may vary** — lower-end GPUs may drop frames when Tech Vision overlays are active.
-- **Avoid external 3D models until optimized** — imported assets would increase load time and memory use.
-- Lightweight geometry, low particle counts, and HTML UI outside the Canvas help keep the POC stable.
-- Tech Vision toggles off cleanly to restore normal rendering.
 
 ## Future Integration (Not Implemented)
 
-Recommended later connection points:
-
-- External link or launcher button from 2D curriculum
-- Shared concept IDs and mission-to-lesson references
-- Separate GitHub Pages deployment URL
+- Launcher link from 2D curriculum
+- Shared concept IDs
 - Optional shared progress backend
 
 Do **not** merge WebGL dependencies into the curriculum repo until this POC is stable.
-
-## Accessibility Notes
-
-- Tech Vision toggle via keyboard (V) and button
-- Scan cards rendered as readable HTML
-- Status text labels alongside color coding
-- Reduced-motion CSS preference respected for non-essential animations
 
 ## License
 

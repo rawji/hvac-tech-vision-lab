@@ -3,29 +3,29 @@ export default function LabLanding({ onStart }) {
     <div className="screen landing-screen">
       <div className="landing-content">
         <p className="eyebrow">HVAC Technician World</p>
-        <h1>HVAC Tech Vision Lab</h1>
+        <h1>Service Call Practice</h1>
         <p className="subtitle">
-          Learn it in 2D. Practice it in 3D. Diagnose it with Tech Vision.
+          A compact browser-native neighborhood scene for HVAC field-service practice.
         </p>
         <p className="demo-notice">
-          Desktop recommended for this early WebGL proof-of-concept. Mobile touch controls are experimental.
+          Click to move and inspect — mouse on desktop, touch on mobile. No keyboard required.
         </p>
         <p className="description">
-          A compact WebGL training world for applied HVAC service-call practice.
-          Walk the scene, inspect equipment, activate Tech Vision, scan diagnostic
-          clues, and reason through real troubleshooting scenarios.
+          You are the technician on a living service call. Click the yard or equipment to walk
+          there, inspect systems as you arrive, enable Tech Vision to log diagnostic clues, and
+          reason through the call like you would in the field.
         </p>
         <ul className="feature-list">
-          <li>Stylized residential service-call environment</li>
-          <li>Tech Vision diagnostic overlay (press V)</li>
-          <li>Component scanning and clue discovery</li>
-          <li>Educational diagnosis feedback</li>
+          <li>Handcrafted residential service-call diorama</li>
+          <li>Click-to-move navigation and contextual inspection</li>
+          <li>Tech Vision diagnostic overlay for field scans</li>
+          <li>Clipboard-style readouts and service reasoning</li>
         </ul>
         <button type="button" className="btn btn-primary" onClick={onStart}>
-          Enter Technician World
+          Start Service Call
         </button>
         <p className="disclaimer">
-          Separate experimental lab — not connected to the 2D HVAC/EPA curriculum.
+          Standalone practice world — separate from the 2D HVAC/EPA curriculum app.
         </p>
       </div>
     </div>

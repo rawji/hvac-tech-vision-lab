@@ -335,7 +335,7 @@ export default function App() {
 
       <div className="mission-layout world-first">
         <main className="world-container">
-          <Suspense fallback={<LoadingSplash message="Loading WebGL modules..." progress={0.4} />}>
+          <Suspense fallback={<LoadingSplash message="Loading neighborhood scene…" progress={0.4} />}>
             <HVACWorld
               equipmentHealth={mission.equipmentHealth}
               playerPosition={state.playerPosition}

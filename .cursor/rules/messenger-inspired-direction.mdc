@@ -1,0 +1,116 @@
+---
+description: HVAC Technician World — Messenger-inspired design philosophy (quality bar only, not a clone)
+alwaysApply: true
+---
+
+# HVAC Technician World — Messenger-Inspired Direction
+
+**Quality reference:** https://messenger.abeto.co/ — borrow interaction philosophy and emotional design language only.
+
+**Do NOT copy:** Messenger code, assets, characters, world, planet concept, branding, story, delivery missions, UI, or artwork.
+
+**Comparison:** Messenger, but instead of delivering mail on a tiny planet, the player is an HVAC technician responding to service calls in a living interactive neighborhood.
+
+## Core Identity
+
+A compact, handcrafted, browser-native 3D technician adventure — a living WebGL illustration / stylized service diorama.
+
+**Should feel like:** professional field-service adventure, playable HVAC diagnostic scene, immersive service-call experience.
+
+**Should NOT feel like:** online course, quiz app, corporate training module, generic simulator, large empty map, tech demo with HVAC props dropped in.
+
+**Player mindset:** “I am an HVAC technician responding to a real service call.” Not: “I am taking a lesson.”
+
+## Borrow From Messenger (Principles Only)
+
+- Small world, high density · effortless click-to-move · contextual interaction
+- Minimal input complexity · camera supports player · stylized illustration-like visuals
+- Strong environmental personality · browser-native smoothness · low-friction onboarding
+- UI stays out of the way · clear silhouettes · subtle motion · world feels alive
+- Player points, moves, explores, interacts — controls disappear behind the task
+
+## HVAC Translation
+
+Replace mail/planet errands with: service calls, customer homes, condenser, thermostat, disconnect, service van, inspection workflows, field notes, repair reasoning.
+
+Approachable and charming, but **technician-focused and professional**.
+
+## World Design
+
+One **small, dense, purposeful, readable, memorable** service-call diorama — not an open world.
+
+Mission 1 = polished neighborhood service-call scene. Every object intentionally placed. Player learns the space quickly.
+
+Elements: house, driveway, yard, condenser, thermostat, disconnect, van, fence, porch, walkway, shrubs, utility cues.
+
+## Visual / Art Direction
+
+Stylized, readable, illustration-inspired — **not photorealistic**.
+
+Warm normal palette · cooler Tech Vision palette · simple geometry · strong silhouettes · subtle outlines · intentional lighting · compact composition.
+
+Closer to: animated illustration, WebGL diorama, playable field manual.
+
+Avoid: corporate LMS, photoreal sim, generic asset-pack, Roblox-like noise, sterile training software.
+
+## Movement (Mission 1 Baseline)
+
+**Primary:** mouse/touch destination selection only for full mission flow.
+
+Click ground → walk. Click equipment → walk → face → inspection opens automatically.
+
+Smooth, soft, predictable, calm — not twitchy or overly game-like.
+
+Keyboard (E/F/V) = optional accessibility only. **Non-gamers must complete Mission 1 with mouse or touch alone.**
+
+## Interaction Loop
+
+Point → Move → Arrive → Face → Inspect.
+
+Examples: condenser, thermostat, disconnect (auto inspection card); service van (van menu).
+
+Action menu: Inspect, Scan, View Notes — no extra confirmation keys required.
+
+## Camera
+
+Third-person follow · soft damping · drag orbit (360, holds heading) · scroll/pinch zoom · auto-framing on equipment · reduced swing when UI open · subtle mouse swing when idle.
+
+Alive but stable. Player feels guided, not controlled. Never fight click interactions.
+
+## UI
+
+World-first. Compact mission bar · clipboard inspection cards · equipment action menu · minimal prompts · technician language.
+
+Avoid: classroom panels, quiz screens, HUD clutter, tutorial overload, corporate e-learning chrome.
+
+UI = technician tooling, not school software.
+
+## Mission 1 Loop
+
+Receive service context → navigate → inspect → observe → Tech Vision → record clues → reason → complete objective.
+
+Learning through observation and interaction, not quiz presentation.
+
+## World Aliveness (Subtle)
+
+Condenser fan, thermostat glow, van beacon, shrub sway, window glow, airflow shimmer, scanner reticle, diagnostic grid — quiet breathing, not spectacle.
+
+## Tech Vision
+
+Distinct diagnostic layer: cooler, clearer, analytical. Supports thinking without revealing final answers directly.
+
+## UX Success Metric
+
+Player asks “What should I inspect next?” — not “What button do I press?”
+
+## Hard Avoids
+
+Mission 2 before Mission 1 polish · large empty maps · breaking click-to-move · aggressive camera · answer leakage · overbuilt UI · school/quiz framing in copy · referencing Messenger/abeto in committed repo text (internal benchmark only)
+
+## Architecture (Preserve)
+
+`data/` · `logic/` (diagnosis) · `world/` · `techVision/` (visuals only) · `ui/` · `interactions/`
+
+## Final Statement
+
+A Messenger-**inspired** HVAC service-call adventure: compact handcrafted browser-native diorama, click-through living neighborhood, contextual equipment inspection, diagnostic reasoning through immersive field-service interaction — same feeling of effortless movement, charming density, smooth browser performance, minimal UI friction, memorable atmosphere.

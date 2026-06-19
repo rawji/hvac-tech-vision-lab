@@ -1,52 +1,24 @@
 ---
-description: Visual and UX direction for HVAC Tech Vision Lab — polished browser-native 3D world feel
+description: Visual and UX direction for HVAC Technician World (see messenger-inspired-direction.mdc for full spec)
 alwaysApply: true
 ---
 
 # Visual / UX Direction
 
-Use compact browser-game polish as a **quality reference only** (smooth navigation, small-world diorama, minimal UI). Do **not** copy theme, art, mechanics, UI identity, or code.
+Full product direction: **`.cursor/rules/messenger-inspired-direction.mdc`**
 
-## Product Feel
+## Quick Reference
 
-- Browser-native **3D world first**, not a webpage with a canvas widget.
-- UI: minimal, quiet, world-integrated — compact mission bar, subtle prompts, scan/readout overlays.
-- Player should feel **control, atmosphere, and purpose** immediately.
-- Small-world **diorama**: compact, readable, handcrafted, intentionally placed objects.
-- **Stylized, not realistic** — clean silhouettes, warm atmosphere, lightweight geometry, practical HVAC detail.
-- Avoid sterile training-module or quiz aesthetics (big classroom panels, cartoon tutorials, gamification overload).
-
-## Camera & Movement (Mission 1 baseline)
-
-- Camera-relative WASD / touch pad
-- Smooth acceleration/deceleration, third-person follow, optional right-drag look
-- No OrbitControls as primary feel; no camera fighting movement
-- Interactions via proximity, selection, and line-of-sight — obvious without giant arrows
-- Reset View is backup, not required for normal play
-
-## UI Tone
-
-Prefer job-flow language:
-
-- "Service Call: No cooling reported"
-- "Inspect outdoor condenser"
-- "Record finding" / diagnostic readout
-
-Avoid school-quiz framing in HUD copy.
+- **Product name in-world:** HVAC Technician World (repo: hvac-tech-vision-lab)
+- **Feel:** compact browser-native service-call diorama — not training module, not open world
+- **Controls:** click/tap to move and inspect; keyboard optional accessibility only
+- **Copy tone:** service call / field technician — avoid school-quiz and “WebGL training POC” framing in user-facing text
+- **Messenger:** quality benchmark only — never copy assets, story, or branding
 
 ## Interaction Loop
 
-Move → approach equipment → inspect/scan clues → diagnose → HVAC explanation. Inspect ≠ Scan. No early answer leakage. Diagnosis logic stays in `logic/`.
+Point → move → arrive → face → inspect/scan → diagnose. Inspect ≠ Scan. No early answer leakage.
 
-## World Scope
+## Scope
 
-- **One polished small service area** before expanding (current: one house, yard, condenser, air handler, van).
-- Do not build huge empty maps, Mission 2, backend, external models, or 2D curriculum coupling in polish passes.
-
-## Animation / Life (incremental)
-
-Subtle procedural motion only: condenser fan, ambient airflow, window glow, equipment pulse on scan, soft UI transitions. No heavy physics or external assets.
-
-## Architecture
-
-`data/` content · `logic/` state & diagnosis · `world/` scene · `techVision/` overlay visuals · `ui/` HUD · `interactions/` controls
+One polished Mission 1 neighborhood scene before expansion. No Mission 2, backend, external models, or 2D curriculum coupling in polish passes.

@@ -12,8 +12,8 @@ export default function TechnicianSelect({ onSelect, onBack }) {
   return (
     <div className="screen select-screen">
       <div className="select-content">
-        <h2>Select Your Technician</h2>
-        <p>Choose a character for the no-cooling service call.</p>
+        <h2>Your Technician</h2>
+        <p>Choose who responds to today&apos;s no-cooling service call.</p>
 
         <div className="select-group">
           <div className="option-grid">

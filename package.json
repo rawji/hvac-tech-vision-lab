@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Isolated WebGL HVAC technician training world with Tech Vision diagnostic overlay",
+  "description": "HVAC Technician World — Messenger-inspired browser-native service-call practice with Tech Vision overlay",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
