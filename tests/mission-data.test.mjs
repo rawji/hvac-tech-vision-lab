@@ -13,7 +13,7 @@ test('getDefaultMission returns dirty condenser mission', () => {
 test('getMissionById finds mission by id', () => {
   const mission = getMissionById('dirty-condenser-001');
   assert.ok(mission);
-  assert.equal(mission.title, 'No Cooling Call: Dirty Condenser Coil');
+  assert.equal(mission.title, 'Service Call: No Cooling Reported');
 });
 
 test('mission equipmentHealth has required diagnostic fields', () => {

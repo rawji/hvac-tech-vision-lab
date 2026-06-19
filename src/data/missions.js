@@ -1,10 +1,9 @@
 export const missions = [
   {
     id: 'dirty-condenser-001',
-    title: 'No Cooling Call: Dirty Condenser Coil',
-    customerComplaint: 'The system runs, but the house is not cooling well.',
-    objective:
-      'Investigate the system, gather diagnostic clues, and identify the likely cause of weak cooling.',
+    title: 'Service Call: No Cooling Reported',
+    customerComplaint: 'Homeowner says the system runs, but the house is not cooling well.',
+    objective: 'Inspect the outdoor condenser and record findings before choosing a diagnosis.',
     equipmentHealth: {
       compressor: 'good',
       condenserFan: 'good',

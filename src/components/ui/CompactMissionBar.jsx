@@ -15,7 +15,10 @@ export default function CompactMissionBar({
 
   return (
     <div className="compact-mission-bar">
-      <p className="compact-objective">{mission.objective}</p>
+      <div className="compact-mission-copy">
+        <p className="compact-objective">{mission.title}</p>
+        {!selectionHint && <p className="compact-subline">{mission.objective}</p>}
+      </div>
       <div className="compact-stats">
         {selectionHint && <span className="compact-selection">{selectionHint}</span>}
         <span className={techVisionEnabled ? 'vision-on' : ''}>
