@@ -9,6 +9,7 @@ export default function WorldInteractable({
   size,
   color = '#94a3b8',
   onNavigate,
+  pointerDragRef,
   isSelected = false,
   isNearby = false,
 }) {
@@ -24,6 +25,7 @@ export default function WorldInteractable({
   });
 
   const handleClick = (e) => {
+    if (pointerDragRef?.current?.didDrag) return;
     e.stopPropagation();
     onNavigate?.(id);
   };

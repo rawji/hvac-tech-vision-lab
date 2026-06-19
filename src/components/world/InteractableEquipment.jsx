@@ -9,6 +9,7 @@ export default function InteractableEquipment({
   size,
   color,
   onSelect,
+  pointerDragRef,
   isNearby = false,
   isSelected = false,
   isInspected = false,
@@ -101,6 +102,7 @@ export default function InteractableEquipment({
   };
 
   const handleClick = (e) => {
+    if (pointerDragRef?.current?.didDrag) return;
     e.stopPropagation();
     onSelect?.(id);
   };

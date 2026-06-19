@@ -234,6 +234,7 @@ function WorldContent({
     equipmentHealth,
     onSelect: handleNavigateToTarget,
     equipmentState,
+    pointerDragRef,
   };
 
   return (
@@ -264,6 +265,7 @@ function WorldContent({
       <NavigationGround onNavigate={handleNavigateToPoint} pointerDragRef={pointerDragRef} />
       <PropertyDetails
         onNavigate={handleNavigateToTarget}
+        pointerDragRef={pointerDragRef}
         equipmentState={equipmentState}
         selectedTargetId={selectedTargetId}
         proximityId={proximityTarget?.id}

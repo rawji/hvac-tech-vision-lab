@@ -21,6 +21,7 @@ const FENCE_SEGMENTS = [
 
 export default function PropertyDetails({
   onNavigate,
+  pointerDragRef,
   equipmentState,
   selectedTargetId,
   proximityId,
@@ -69,6 +70,7 @@ export default function PropertyDetails({
           size={[2.4, 1.8, 4.6]}
           color={PALETTE.vanBody}
           onNavigate={onNavigate}
+          pointerDragRef={pointerDragRef}
           isSelected={selectedTargetId === VAN_TARGET.id}
           isNearby={proximityId === VAN_TARGET.id}
         />
@@ -136,6 +138,7 @@ export default function PropertyDetails({
         size={[0.35, 0.55, 0.2]}
         color="#f5f5f4"
         onNavigate={onNavigate}
+        pointerDragRef={pointerDragRef}
         isSelected={selectedTargetId === DISCONNECT_TARGET.id}
         isNearby={proximityId === DISCONNECT_TARGET.id}
       />

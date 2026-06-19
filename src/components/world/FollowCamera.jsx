@@ -9,7 +9,7 @@ const HEIGHT = 6.5;
 const LOOK_AT_HEIGHT = 1.1;
 const DRAG_SENSITIVITY = 0.004;
 const MAX_DRAG = 1.2;
-const DRAG_THRESHOLD = 8;
+const DRAG_THRESHOLD = 6;
 const ZOOM_SENSITIVITY = 0.55;
 
 const SWING_YAW_MAX = 0.25;
@@ -32,10 +32,11 @@ export default function FollowCamera({
 }) {
   const { camera, gl } = useThree();
   const yaw = useRef(Math.PI);
-  const dragOffset = useRef(0);
+  const manualYawOffset = useRef(0);
   const distance = useRef(DEFAULT_DISTANCE);
-  const dragging = useRef(false);
-  const pointerDownOnCanvas = useRef(false);
+  const orbitActive = useRef(false);
+  const orbitPointerDown = useRef(false);
+  const orbitPointerId = useRef(null);
   const pointerOverCanvas = useRef(false);
   const lastPointerX = useRef(0);
   const lastSwingX = useRef(0);
@@ -54,7 +55,7 @@ export default function FollowCamera({
   uiStableRef.current = uiStable;
 
   useEffect(() => {
-    dragOffset.current = 0;
+    manualYawOffset.current = 0;
     distance.current = DEFAULT_DISTANCE;
     swingTargetYaw.current = 0;
     swingTargetPitch.current = 0;
@@ -67,7 +68,7 @@ export default function FollowCamera({
   }, [resetKey, camera]);
 
   function updateCameraPosition() {
-    const effectiveYaw = yaw.current + dragOffset.current + swingYaw.current;
+    const effectiveYaw = yaw.current + manualYawOffset.current + swingYaw.current;
     desiredPos.current.set(
       playerPosition[0] + Math.sin(effectiveYaw) * distance.current,
       HEIGHT + swingPitch.current * 2.2,
@@ -76,7 +77,7 @@ export default function FollowCamera({
   }
 
   function applySwingFromDelta(dx, dy) {
-    if (uiStableRef.current) return;
+    if (uiStableRef.current || orbitActive.current || orbitPointerDown.current) return;
 
     swingTargetYaw.current = THREE.MathUtils.clamp(
       swingTargetYaw.current + dx * SWING_DELTA_SENSITIVITY,
@@ -95,14 +96,10 @@ export default function FollowCamera({
     if (!enabled) return;
 
     const targetYaw = playerFacing + Math.PI;
-    const followStrength = dragging.current ? 0 : 1 - Math.exp(-5 * delta);
+    const followStrength = orbitActive.current ? 0 : 1 - Math.exp(-5 * delta);
     yaw.current += (targetYaw - yaw.current) * followStrength;
 
-    if (!dragging.current) {
-      dragOffset.current += (0 - dragOffset.current) * (1 - Math.exp(-3 * delta));
-    }
-
-    const swingAllowed = !dragging.current && !pointerDownOnCanvas.current;
+    const swingAllowed = !orbitActive.current && !orbitPointerDown.current;
     const idle =
       performance.now() - lastMouseMoveTime.current > SWING_IDLE_MS || uiStableRef.current;
     const decayRate = uiStableRef.current ? UI_STABLE_DECAY : SWING_DECAY;
@@ -141,6 +138,34 @@ export default function FollowCamera({
     const canvas = gl.domElement;
     const dragRef = pointerDragRef?.current;
 
+    const beginPointerSession = (clientX, clientY, pointerId) => {
+      orbitPointerDown.current = true;
+      orbitActive.current = false;
+      orbitPointerId.current = pointerId;
+      lastPointerX.current = clientX;
+      lastSwingX.current = clientX;
+      lastSwingY.current = clientY;
+      if (dragRef) {
+        dragRef.pointerDown = true;
+        dragRef.didDrag = false;
+        dragRef.startX = clientX;
+        dragRef.startY = clientY;
+      }
+    };
+
+    const endPointerSession = (pointerId) => {
+      if (orbitPointerId.current !== null && pointerId !== orbitPointerId.current) return;
+      orbitPointerDown.current = false;
+      orbitActive.current = false;
+      orbitPointerId.current = null;
+      if (dragRef) dragRef.pointerDown = false;
+      try {
+        canvas.releasePointerCapture(pointerId);
+      } catch {
+        // Pointer may not be captured.
+      }
+    };
+
     const onContextMenu = (e) => e.preventDefault();
 
     const onPointerEnter = () => {
@@ -154,32 +179,38 @@ export default function FollowCamera({
 
     const onPointerDown = (e) => {
       if (e.button !== 0) return;
-      if (e.target !== canvas) return;
-      if (dragRef) {
-        dragRef.pointerDown = true;
-        dragRef.didDrag = false;
-        dragRef.startX = e.clientX;
-        dragRef.startY = e.clientY;
-      }
-      pointerDownOnCanvas.current = true;
-      dragging.current = true;
-      lastPointerX.current = e.clientX;
-      lastSwingX.current = e.clientX;
-      lastSwingY.current = e.clientY;
+      beginPointerSession(e.clientX, e.clientY, e.pointerId);
     };
 
     const onPointerMove = (e) => {
-      if (dragRef?.pointerDown) {
-        const dx = e.clientX - dragRef.startX;
-        const dy = e.clientY - dragRef.startY;
-        if (Math.hypot(dx, dy) > (dragRef.dragThreshold ?? DRAG_THRESHOLD)) {
-          dragRef.didDrag = true;
+      if (orbitPointerDown.current && e.pointerId === orbitPointerId.current) {
+        const totalDx = e.clientX - (dragRef?.startX ?? e.clientX);
+        const totalDy = e.clientY - (dragRef?.startY ?? e.clientY);
+
+        if (!orbitActive.current && Math.hypot(totalDx, totalDy) > DRAG_THRESHOLD) {
+          orbitActive.current = true;
+          if (dragRef) dragRef.didDrag = true;
+          try {
+            canvas.setPointerCapture(e.pointerId);
+          } catch {
+            // Ignore capture failures.
+          }
+        }
+
+        if (orbitActive.current) {
+          const dx = e.clientX - lastPointerX.current;
+          lastPointerX.current = e.clientX;
+          manualYawOffset.current -= dx * DRAG_SENSITIVITY;
+          manualYawOffset.current = THREE.MathUtils.clamp(
+            manualYawOffset.current,
+            -MAX_DRAG,
+            MAX_DRAG
+          );
         }
       }
 
       const isMouse = e.pointerType === 'mouse';
-
-      if (isMouse && pointerOverCanvas.current && !dragging.current) {
+      if (isMouse && pointerOverCanvas.current && !orbitPointerDown.current) {
         const sdx = e.clientX - lastSwingX.current;
         const sdy = e.clientY - lastSwingY.current;
         if (sdx !== 0 || sdy !== 0) {
@@ -188,20 +219,15 @@ export default function FollowCamera({
       }
       lastSwingX.current = e.clientX;
       lastSwingY.current = e.clientY;
-
-      if (!dragging.current) return;
-      const dx = e.clientX - lastPointerX.current;
-      lastPointerX.current = e.clientX;
-      dragOffset.current -= dx * DRAG_SENSITIVITY;
-      dragOffset.current = THREE.MathUtils.clamp(dragOffset.current, -MAX_DRAG, MAX_DRAG);
     };
 
     const onPointerUp = (e) => {
-      if (e.button === 0) {
-        dragging.current = false;
-        pointerDownOnCanvas.current = false;
-        if (dragRef) dragRef.pointerDown = false;
-      }
+      if (e.button !== 0) return;
+      endPointerSession(e.pointerId);
+    };
+
+    const onPointerCancel = (e) => {
+      endPointerSession(e.pointerId);
     };
 
     const onWheel = (e) => {
@@ -221,14 +247,7 @@ export default function FollowCamera({
           camDistance: distance.current,
         };
       } else if (e.touches.length === 1) {
-        dragging.current = true;
-        lastPointerX.current = e.touches[0].clientX;
-        if (dragRef) {
-          dragRef.pointerDown = true;
-          dragRef.didDrag = false;
-          dragRef.startX = e.touches[0].clientX;
-          dragRef.startY = e.touches[0].clientY;
-        }
+        beginPointerSession(e.touches[0].clientX, e.touches[0].clientY, e.touches[0].identifier);
       }
     };
 
@@ -245,35 +264,47 @@ export default function FollowCamera({
         );
         return;
       }
-      if (e.touches.length === 1 && dragging.current) {
-        const touch = e.touches[0];
-        if (dragRef?.pointerDown) {
-          const dx = touch.clientX - dragRef.startX;
-          const dy = touch.clientY - dragRef.startY;
-          if (Math.hypot(dx, dy) > (dragRef.dragThreshold ?? DRAG_THRESHOLD)) {
-            dragRef.didDrag = true;
-          }
-        }
+
+      if (e.touches.length !== 1 || !orbitPointerDown.current) return;
+
+      const touch = e.touches[0];
+      const totalDx = touch.clientX - (dragRef?.startX ?? touch.clientX);
+      const totalDy = touch.clientY - (dragRef?.startY ?? touch.clientY);
+
+      if (!orbitActive.current && Math.hypot(totalDx, totalDy) > DRAG_THRESHOLD) {
+        orbitActive.current = true;
+        if (dragRef) dragRef.didDrag = true;
+      }
+
+      if (orbitActive.current) {
         const dx = touch.clientX - lastPointerX.current;
         lastPointerX.current = touch.clientX;
-        dragOffset.current -= dx * DRAG_SENSITIVITY;
-        dragOffset.current = THREE.MathUtils.clamp(dragOffset.current, -MAX_DRAG, MAX_DRAG);
+        manualYawOffset.current -= dx * DRAG_SENSITIVITY;
+        manualYawOffset.current = THREE.MathUtils.clamp(
+          manualYawOffset.current,
+          -MAX_DRAG,
+          MAX_DRAG
+        );
       }
     };
 
-    const onTouchEnd = () => {
-      dragging.current = false;
-      pointerDownOnCanvas.current = false;
+    const onTouchEnd = (e) => {
       pinchStart.current = null;
-      if (dragRef) dragRef.pointerDown = false;
+      if (e.touches.length === 0) {
+        orbitPointerDown.current = false;
+        orbitActive.current = false;
+        orbitPointerId.current = null;
+        if (dragRef) dragRef.pointerDown = false;
+      }
     };
 
     canvas.addEventListener('contextmenu', onContextMenu);
     canvas.addEventListener('pointerenter', onPointerEnter);
     canvas.addEventListener('pointerleave', onPointerLeave);
-    canvas.addEventListener('pointerdown', onPointerDown);
+    canvas.addEventListener('pointerdown', onPointerDown, { capture: true });
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerCancel);
     canvas.addEventListener('wheel', onWheel, { passive: false });
     canvas.addEventListener('touchstart', onTouchStart, { passive: true });
     canvas.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -283,9 +314,10 @@ export default function FollowCamera({
       canvas.removeEventListener('contextmenu', onContextMenu);
       canvas.removeEventListener('pointerenter', onPointerEnter);
       canvas.removeEventListener('pointerleave', onPointerLeave);
-      canvas.removeEventListener('pointerdown', onPointerDown);
+      canvas.removeEventListener('pointerdown', onPointerDown, { capture: true });
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerCancel);
       canvas.removeEventListener('wheel', onWheel);
       canvas.removeEventListener('touchstart', onTouchStart);
       canvas.removeEventListener('touchmove', onTouchMove);
