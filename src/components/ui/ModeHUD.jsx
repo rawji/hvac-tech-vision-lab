@@ -5,7 +5,7 @@ export default function ModeHUD({ techVisionEnabled, scannedCount, nearbyTarget,
         Tech Vision: {techVisionEnabled ? 'ON' : 'OFF'}
       </div>
       <div className="hud-badge">Scanned: {scannedCount}</div>
-      <div className="hud-badge">Clues: {discoveredCount}</div>
+      <div className="hud-badge">Observations: {discoveredCount}</div>
       {nearbyTarget && (
         <div className="hud-badge nearby">Near: {nearbyTarget.label}</div>
       )}

@@ -1,60 +1,61 @@
-export const OBSERVED_CONDITION_RULES = {
-  highHeadPressure: {
-    condition: 'Head pressure trend elevated',
-    possibleCauses: ['Outdoor coil fouling', 'Overcharge', 'Outdoor airflow restriction'],
+export const FIELD_OBSERVATIONS = {
+  liquidLinePressureHigh: {
+    condition: 'Liquid line pressure reads 312 PSIG at the outdoor service valve.',
   },
-  weakTemperatureSplit: {
-    condition: 'Weak Temperature Split',
-    possibleCauses: ['Poor heat transfer', 'Airflow problem', 'Refrigerant circuit issue'],
+  temperatureSplitNarrow: {
+    condition: 'Return air 78°F. Supply air 70°F. Temperature split 8°F.',
   },
-  restrictedOutdoorAirflow: {
-    condition: 'Outdoor airflow restricted',
-    possibleCauses: ['Outdoor coil fouling', 'Blocked outdoor coil', 'Fan airflow obstruction'],
+  coilFaceAirVelocityLow: {
+    condition: 'Air movement at the condenser coil face is lower than typical at full speed.',
   },
-  dirtyCondenserCoil: {
-    condition: 'Coil surface fouling detected',
-    possibleCauses: ['Debris buildup', 'Lack of maintenance', 'Restricted airflow path'],
+  condenserFinDebris: {
+    condition: 'Condenser fins show visible debris accumulation on the air-entering side.',
   },
-  elevatedDischargeTemp: {
-    condition: 'Elevated Discharge Temperature',
-    possibleCauses: ['High head pressure', 'Condenser heat rejection issue', 'Overcharge'],
+  dischargeLineTempHigh: {
+    condition: 'Discharge line surface temperature reads 148°F.',
   },
-  normalSuctionPressure: {
-    condition: 'Suction Pressure Normal',
-    possibleCauses: ['Charge likely adequate', 'No severe low-side restriction indicated'],
+  suctionPressureReading: {
+    condition: 'Suction line pressure reads 118 PSIG.',
   },
-  coolingDemandActive: {
-    condition: 'Cooling Demand Active',
-    possibleCauses: ['Thermostat functioning', 'Control circuit engaged'],
+  coolingCallActive: {
+    condition: 'Thermostat Y1 output: 24V present. Space temperature above setpoint.',
+  },
+  disconnectOn: {
+    condition: 'Disconnect ON. Line voltage present at outdoor unit lugs.',
   },
 };
 
-export function getDiagnosticCluesFromHealth(equipmentHealth) {
-  const clues = [];
+export function getFieldObservationsFromHealth(equipmentHealth) {
+  const observations = [];
 
   if (equipmentHealth.headPressure === 'high') {
-    clues.push(OBSERVED_CONDITION_RULES.highHeadPressure);
+    observations.push(FIELD_OBSERVATIONS.liquidLinePressureHigh);
   }
   if (equipmentHealth.temperatureSplit === 'weak') {
-    clues.push(OBSERVED_CONDITION_RULES.weakTemperatureSplit);
+    observations.push(FIELD_OBSERVATIONS.temperatureSplitNarrow);
   }
   if (equipmentHealth.outdoorAirflow === 'restricted') {
-    clues.push(OBSERVED_CONDITION_RULES.restrictedOutdoorAirflow);
+    observations.push(FIELD_OBSERVATIONS.coilFaceAirVelocityLow);
   }
   if (equipmentHealth.condenserCoil === 'dirty') {
-    clues.push(OBSERVED_CONDITION_RULES.dirtyCondenserCoil);
+    observations.push(FIELD_OBSERVATIONS.condenserFinDebris);
   }
   if (equipmentHealth.dischargeTemperature === 'high') {
-    clues.push(OBSERVED_CONDITION_RULES.elevatedDischargeTemp);
+    observations.push(FIELD_OBSERVATIONS.dischargeLineTempHigh);
   }
   if (equipmentHealth.suctionPressure === 'normal') {
-    clues.push(OBSERVED_CONDITION_RULES.normalSuctionPressure);
+    observations.push(FIELD_OBSERVATIONS.suctionPressureReading);
   }
   if (equipmentHealth.thermostat === 'calling') {
-    clues.push(OBSERVED_CONDITION_RULES.coolingDemandActive);
+    observations.push(FIELD_OBSERVATIONS.coolingCallActive);
   }
 
-  return clues;
+  return observations;
+}
+
+/** @deprecated Use getFieldObservationsFromHealth — kept for imports during transition */
+export function getDiagnosticCluesFromHealth(equipmentHealth) {
+  return getFieldObservationsFromHealth(equipmentHealth);
 }
 
 export function mergeClues(existingClues, newClues) {

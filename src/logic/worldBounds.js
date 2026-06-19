@@ -1,6 +1,7 @@
-export const WORLD_BOUNDS = { minX: -7, maxX: 7, minZ: -6, maxZ: 7 };
-export const DEFAULT_PLAYER_POSITION = [0, 0, 4];
-export const MOVE_SPEED = 4;
+import { DEFAULT_PLAYER_POSITION, WORLD_BOUNDS } from '../data/worldLayout.js';
+
+export { DEFAULT_PLAYER_POSITION, WORLD_BOUNDS };
+export const MOVE_SPEED = 4.5;
 
 export function clampPosition(x, z) {
   return [

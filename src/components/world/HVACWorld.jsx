@@ -30,7 +30,7 @@ const TARGET_POSITIONS = Object.fromEntries(
   INTERACTION_TARGETS.map((t) => [t.id, t.position])
 );
 
-const DEFAULT_CAMERA = { position: [0, 6.5, 8.5], fov: 48, near: 0.1, far: 100 };
+const DEFAULT_CAMERA = { position: [-2, 9, 16], fov: 46, near: 0.1, far: 120 };
 
 function WorldContent({
   equipmentHealth,
@@ -242,10 +242,14 @@ function WorldContent({
       <ambientLight intensity={techVisionEnabled ? TECH_VISION.ambient : NORMAL_LIGHT.ambient} />
       <directionalLight
         castShadow
-        position={[10, 14, 6]}
-        intensity={techVisionEnabled ? 1.05 : 1.2}
+        position={[14, 20, 10]}
+        intensity={techVisionEnabled ? 1.05 : 1.35}
         color={techVisionEnabled ? TECH_VISION.keyLight : NORMAL_LIGHT.keyLight}
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
       />
       <hemisphereLight
         args={[
@@ -255,10 +259,10 @@ function WorldContent({
         ]}
       />
       <Sky
-        sunPosition={[100, 14, 80]}
-        turbidity={techVisionEnabled ? 0.55 : 0.35}
-        rayleigh={techVisionEnabled ? 1.1 : 0.65}
-        mieCoefficient={0.005}
+        sunPosition={[80, 18, 60]}
+        turbidity={techVisionEnabled ? 0.55 : 0.28}
+        rayleigh={techVisionEnabled ? 1.1 : 0.82}
+        mieCoefficient={0.004}
       />
 
       <HouseScene />
@@ -346,7 +350,7 @@ export default function HVACWorld({
       <TechVisionProvider enabled={techVisionEnabled}>
         <Canvas shadows camera={DEFAULT_CAMERA} style={canvasStyle}>
           <color attach="background" args={[PALETTE.sky]} />
-          {!techVisionEnabled && <fog attach="fog" args={[PALETTE.fog, 22, 50]} />}
+          {!techVisionEnabled && <fog attach="fog" args={[PALETTE.fog, 38, 95]} />}
 
           <WorldContent
             equipmentHealth={equipmentHealth}

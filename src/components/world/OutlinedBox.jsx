@@ -11,19 +11,22 @@ export default function OutlinedBox({
   receiveShadow = false,
   emissive,
   emissiveIntensity = 0,
+  realistic = false,
 }) {
   return (
     <group position={position} rotation={rotation}>
-      <mesh scale={outlineScale}>
-        <boxGeometry args={args} />
-        <meshBasicMaterial color={outlineColor} />
-      </mesh>
+      {!realistic && (
+        <mesh scale={outlineScale}>
+          <boxGeometry args={args} />
+          <meshBasicMaterial color={outlineColor} />
+        </mesh>
+      )}
       <mesh castShadow={castShadow} receiveShadow={receiveShadow}>
         <boxGeometry args={args} />
         <meshStandardMaterial
           color={color}
-          roughness={roughness}
-          metalness={metalness}
+          roughness={realistic ? Math.min(roughness + 0.08, 1) : roughness}
+          metalness={realistic ? metalness * 0.5 : metalness}
           emissive={emissive ?? '#000000'}
           emissiveIntensity={emissiveIntensity}
         />

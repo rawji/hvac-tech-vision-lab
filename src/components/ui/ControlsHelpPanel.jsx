@@ -1,21 +1,18 @@
 export default function ControlsHelpPanel() {
   return (
-    <details className="panel controls-help-panel">
-      <summary>Controls &amp; Help</summary>
-      <ul className="controls-list">
-        <li>Click ground or path — walk to that spot</li>
-        <li>Click equipment — walk over and open inspection</li>
-        <li>Drag — rotate camera</li>
-        <li>Scroll / pinch — zoom camera</li>
-        <li>Tap actions — Inspect, Scan, View Notes</li>
-        <li>Tech Vision button — enable diagnostic scanning</li>
-        <li><kbd>Esc</kbd> — close panels</li>
+    <div className="panel controls-help">
+      <h3>Controls</h3>
+      <ul>
+        <li>Click / tap — walk to ground or equipment</li>
+        <li>Drag — rotate camera (360°)</li>
+        <li>Scroll / pinch — zoom</li>
+        <li>Tech Vision button — enable field measurement overlay</li>
+        <li>E / F — inspect or scan nearby equipment (keyboard)</li>
+        <li>V — toggle Tech Vision (keyboard)</li>
       </ul>
-      <div className="help-callout">
-        <p><strong>Optional keyboard shortcuts</strong></p>
-        <p><kbd>V</kbd> toggle Tech Vision · <kbd>E</kbd> inspect · <kbd>F</kbd> scan when nearby</p>
-        <p>Inspect shows component readings. Scan with Tech Vision ON records diagnostic clues.</p>
+      <div className="controls-help-note">
+        <p>Inspect shows visual observations and available readings. Scan with Tech Vision ON records field measurements.</p>
       </div>
-    </details>
+    </div>
   );
 }

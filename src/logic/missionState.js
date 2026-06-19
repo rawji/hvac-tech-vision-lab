@@ -1,4 +1,5 @@
 import { buildScanResult } from '../data/scanDefinitions.js';
+import { DEFAULT_PLAYER_POSITION } from '../data/worldLayout.js';
 import { mergeClues } from './diagnosticRules.js';
 import { getNewClueToastMessage } from './clueToast.js';
 
@@ -14,7 +15,7 @@ export const initialMissionState = {
   selectedTechnician: null,
   selectedAppearance: null,
   currentMissionId: null,
-  playerPosition: [0, 0, 4],
+  playerPosition: [...DEFAULT_PLAYER_POSITION],
   nearbyTarget: null,
   selectedTargetId: null,
   selectedScanTarget: null,
@@ -140,7 +141,7 @@ export function missionReducer(state, action) {
     case 'RESET_VIEW':
       return {
         ...state,
-        playerPosition: [0, 0, 4],
+        playerPosition: [...DEFAULT_PLAYER_POSITION],
         cameraResetKey: state.cameraResetKey + 1,
       };
 

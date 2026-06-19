@@ -3,7 +3,7 @@ import test from 'node:test';
 import { getDefaultMission } from '../src/data/missions.js';
 import { initialMissionState, missionReducer } from '../src/logic/missionState.js';
 
-test('INSPECT_TARGET records inspection without adding diagnostic scans', () => {
+test('INSPECT_TARGET records inspection without adding scans', () => {
   const mission = getDefaultMission();
   let state = { ...initialMissionState };
 
@@ -19,7 +19,7 @@ test('INSPECT_TARGET records inspection without adding diagnostic scans', () => 
   assert.ok(state.activeScanResult);
 });
 
-test('SCAN_TARGET records diagnostic scan and clues', () => {
+test('SCAN_TARGET records field scan and observations', () => {
   const mission = getDefaultMission();
   let state = { ...initialMissionState, techVisionEnabled: true };
 
@@ -34,7 +34,7 @@ test('SCAN_TARGET records diagnostic scan and clues', () => {
   assert.ok(state.discoveredClues.length > 0);
 });
 
-test('SCAN_TARGET records clue toast for new conditions', () => {
+test('SCAN_TARGET records observation toast for new field notes', () => {
   const mission = getDefaultMission();
   let state = { ...initialMissionState, techVisionEnabled: true };
 
@@ -45,7 +45,7 @@ test('SCAN_TARGET records clue toast for new conditions', () => {
   });
 
   assert.ok(state.clueToast);
-  assert.match(state.clueToast, /Clue logged:/);
+  assert.match(state.clueToast, /Observation logged:/);
   assert.equal(state.scanPulseTarget, 'condenserCoil');
 });
 
@@ -58,6 +58,6 @@ test('RESET_VIEW restores default player position and increments camera key', ()
 
   state = missionReducer(state, { type: 'RESET_VIEW' });
 
-  assert.deepEqual(state.playerPosition, [0, 0, 4]);
+  assert.deepEqual(state.playerPosition, [-1.5, 0, 11.5]);
   assert.equal(state.cameraResetKey, 1);
 });

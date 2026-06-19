@@ -2,10 +2,10 @@ import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const DEFAULT_DISTANCE = 8.5;
-const MIN_DISTANCE = 5.5;
-const MAX_DISTANCE = 14;
-const HEIGHT = 6.5;
+const DEFAULT_DISTANCE = 11;
+const MIN_DISTANCE = 7;
+const MAX_DISTANCE = 20;
+const HEIGHT = 7.5;
 const LOOK_AT_HEIGHT = 1.1;
 const DRAG_YAW_SENSITIVITY = 0.004;
 const DRAG_PITCH_SENSITIVITY = 0.0014;

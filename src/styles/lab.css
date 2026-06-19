@@ -1250,6 +1250,15 @@ h3 {
   pointer-events: none;
 }
 
+.tech-vision-tag {
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.18);
+}
+
+.tech-vision-tag .tag-status {
+  font-family: 'Courier New', monospace;
+  font-size: 0.68rem;
+}
+
 .tag-label {
   display: block;
   font-weight: 600;

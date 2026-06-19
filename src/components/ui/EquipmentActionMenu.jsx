@@ -33,7 +33,7 @@ export default function EquipmentActionMenu({
           className={`btn action-menu-btn accent ${techVisionEnabled ? '' : 'disabled'}`}
           onClick={() => (techVisionEnabled ? onScan(targetId) : null)}
           disabled={!techVisionEnabled}
-          title={techVisionEnabled ? 'Run diagnostic scan' : 'Enable Tech Vision to scan'}
+          title={techVisionEnabled ? 'Run field scan' : 'Enable Tech Vision to scan'}
         >
           Scan
         </button>

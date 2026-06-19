@@ -5,10 +5,10 @@ export default function DiagnosticScannerButton({ enabled, onToggle }) {
       className={`btn scanner-btn ${enabled ? 'active' : ''}`}
       onClick={onToggle}
       aria-pressed={enabled}
-      aria-label={enabled ? 'Disable Tech Vision diagnostic scanner' : 'Enable Tech Vision diagnostic scanner'}
+      aria-label={enabled ? 'Disable Tech Vision' : 'Enable Tech Vision'}
     >
       <span className="scanner-icon" aria-hidden="true">◎</span>
-      {enabled ? 'Tech Vision ON' : 'Diagnostic Scanner'}
+      {enabled ? 'Tech Vision ON' : 'Tech Vision'}
       <span className="key-hint">V</span>
     </button>
   );

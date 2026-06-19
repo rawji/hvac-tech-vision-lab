@@ -16,7 +16,7 @@ export default function VanMenu({ onClose, onViewNotes, mission }) {
           <strong>Complaint:</strong> {mission?.customerComplaint ?? 'No cooling reported'}
         </li>
         <li>
-          <strong>Objective:</strong> {mission?.objective ?? 'Inspect outdoor equipment'}
+          <strong>Dispatch:</strong> {mission?.objective ?? 'Document on-site observations and measurements.'}
         </li>
       </ul>
       <div className="van-menu-actions">

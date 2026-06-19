@@ -8,8 +8,8 @@ import {
 } from '../src/logic/navigation.js';
 
 test('getApproachPosition stops at standoff distance from target', () => {
-  const player = [0, 0, 4];
-  const target = [4, 0, -1];
+  const player = [-1.5, 0, 11.5];
+  const target = [11, 0, -1.5];
   const approach = getApproachPosition(player, target);
 
   const dist = Math.hypot(approach[0] - target[0], approach[2] - target[2]);
@@ -17,7 +17,7 @@ test('getApproachPosition stops at standoff distance from target', () => {
 });
 
 test('getFaceAngle points from player toward target', () => {
-  const angle = getFaceAngle([0, 0, 4], [4, 0, -1]);
+  const angle = getFaceAngle([-1.5, 0, 11.5], [11, 0, -1.5]);
   assert.ok(angle > -Math.PI && angle <= Math.PI);
 });
 

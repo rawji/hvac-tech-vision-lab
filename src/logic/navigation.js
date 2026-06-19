@@ -1,6 +1,7 @@
 import { clampPosition } from './worldBounds.js';
+import { INTERACTION_POSITIONS } from '../data/worldLayout.js';
 
-export const APPROACH_STANDOFF = 1.85;
+export const APPROACH_STANDOFF = 2.1;
 export const ARRIVAL_THRESHOLD = 0.32;
 export const POINT_ARRIVAL_THRESHOLD = 0.28;
 
@@ -38,14 +39,14 @@ export function isAtDestination(playerPosition, destination, threshold = ARRIVAL
 export const VAN_TARGET = {
   id: 'serviceVan',
   label: 'Service Van',
-  position: [-0.5, 0, 5.5],
+  position: INTERACTION_POSITIONS.serviceVan,
   interactionType: 'van',
 };
 
 export const DISCONNECT_TARGET = {
   id: 'disconnect',
   label: 'Disconnect',
-  position: [3.2, 0, -0.2],
+  position: INTERACTION_POSITIONS.disconnect,
   interactionType: 'equipment',
 };
 

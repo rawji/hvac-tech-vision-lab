@@ -1,59 +1,51 @@
 const STEPS = [
   {
-    id: 1,
-    label: 'Read the customer complaint',
-    hint: 'Review the mission panel. Customer reports weak cooling.',
+    id: 'move',
+    label: 'Walk the property',
+    hint: 'Click ground or equipment to move. Inspection runs when you arrive.',
   },
   {
-    id: 2,
-    label: 'Walk to equipment',
-    hint: 'Click the yard, path, or any equipment to walk there automatically.',
+    id: 'inspect',
+    label: 'Inspect equipment',
+    hint: 'Review the inspection card for visual observations and available readings.',
   },
   {
-    id: 3,
-    label: 'Inspect components',
-    hint: 'When you arrive, the inspection card opens — use on-screen actions.',
+    id: 'techVision',
+    label: 'Enable Tech Vision',
+    hint: 'Tap Tech Vision or the scanner button for the field overlay.',
   },
   {
-    id: 4,
-    label: 'Toggle Tech Vision',
-    hint: 'Tap Tech Vision or the Diagnostic Scanner button for the overlay.',
+    id: 'scan',
+    label: 'Scan and record readings',
+    hint: 'Scan components with Tech Vision ON to log measurements.',
   },
   {
-    id: 5,
-    label: 'Scan diagnostic clues',
-    hint: 'With Tech Vision ON, choose Scan from the action menu near equipment.',
-  },
-  {
-    id: 6,
-    label: 'Choose diagnosis',
-    hint: 'Scan at least two components, then submit your diagnosis.',
+    id: 'diagnose',
+    label: 'Submit diagnosis',
+    hint: 'Scan at least two components, compare readings, then submit your diagnosis.',
   },
 ];
 
-function getCurrentStep(state) {
+function stepIndex(state) {
   if (state.missionCompleted || state.selectedDiagnosis) return 6;
-  if (state.scannedTargets.length >= 2) return 6;
-  if (state.scannedTargets.length >= 1 || state.techVisionEnabled) return 5;
-  if (state.techVisionToggled) return 4;
-  if (state.inspectedTargets.length >= 1) return 3;
-  if (state.nearbyTarget) return 2;
-  return 1;
+  if (state.scannedTargets.length >= 2) return 4;
+  if (state.scannedTargets.length >= 1) return 3;
+  if (state.techVisionEnabled) return 2;
+  if (state.inspectedTargets.length >= 1) return 1;
+  return 0;
 }
 
 function isStepComplete(stepId, state) {
   switch (stepId) {
-    case 1:
-      return state.phase === 'mission';
-    case 2:
-      return Boolean(state.nearbyTarget);
-    case 3:
+    case 'move':
+      return state.inspectedTargets.length >= 1 || state.techVisionToggled;
+    case 'inspect':
       return state.inspectedTargets.length >= 1;
-    case 4:
-      return state.techVisionToggled;
-    case 5:
+    case 'techVision':
+      return state.techVisionEnabled;
+    case 'scan':
       return state.scannedTargets.length >= 2;
-    case 6:
+    case 'diagnose':
       return Boolean(state.selectedDiagnosis) || state.missionCompleted;
     default:
       return false;
@@ -61,21 +53,17 @@ function isStepComplete(stepId, state) {
 }
 
 export default function MissionGuidance({ state }) {
-  const currentStep = getCurrentStep(state);
+  const current = stepIndex(state);
 
   return (
     <div className="panel mission-guidance">
-      <h3>Mission Progress</h3>
+      <h3>Field Workflow</h3>
       <ol className="guidance-steps">
-        {STEPS.map((step) => {
-          const complete = isStepComplete(step.id, state);
-          const active = step.id === currentStep && !complete;
+        {STEPS.map((step, index) => {
+          const done = isStepComplete(step.id, state);
+          const active = index === current;
           return (
-            <li
-              key={step.id}
-              className={`guidance-step ${complete ? 'complete' : ''} ${active ? 'active' : ''}`}
-            >
-              <span className="step-num">Step {step.id}</span>
+            <li key={step.id} className={`guidance-step ${done ? 'done' : ''} ${active ? 'active' : ''}`}>
               <span className="step-label">{step.label}</span>
               {active && <span className="step-hint">{step.hint}</span>}
             </li>

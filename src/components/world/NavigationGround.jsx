@@ -1,3 +1,5 @@
+import { LOT_SIZE } from '../../data/worldLayout.js';
+
 export default function NavigationGround({ onNavigate, pointerDragRef }) {
   const handleClick = (e) => {
     if (pointerDragRef?.current?.didDrag) return;
@@ -11,7 +13,7 @@ export default function NavigationGround({ onNavigate, pointerDragRef }) {
       position={[0, 0.018, 0]}
       onClick={handleClick}
     >
-      <planeGeometry args={[18, 18]} />
+      <planeGeometry args={[LOT_SIZE.width, LOT_SIZE.depth]} />
       <meshBasicMaterial visible={false} />
     </mesh>
   );

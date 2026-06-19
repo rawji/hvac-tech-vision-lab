@@ -1,9 +1,11 @@
 function FieldRow({ field }) {
+  const typeLabel = field.type === 'visual' ? 'Visual' : field.type === 'measurement' ? 'Measurement' : 'Reading';
+
   return (
-    <div className={`scan-field ${field.category}`}>
+    <div className="scan-field">
       <span className="field-label">{field.label}</span>
       <span className="field-value">{field.value}</span>
-      <span className={`field-badge ${field.category}`}>{field.category}</span>
+      <span className="field-badge info">{typeLabel}</span>
     </div>
   );
 }
@@ -24,7 +26,7 @@ export default function ScanCard({
     <div
       className="panel scan-card clipboard-card"
       role="dialog"
-      aria-label={`${isInspect ? 'Inspection' : 'Scan'} results for ${scanResult.label}`}
+      aria-label={`${isInspect ? 'Inspection' : 'Field scan'} for ${scanResult.label}`}
     >
       <div className="clipboard-tab">{isInspect ? 'INSPECTION' : 'FIELD SCAN'}</div>
 
@@ -40,8 +42,8 @@ export default function ScanCard({
 
       <p className={`scan-mode-note ${isInspect ? 'inspect-note' : 'scan-note'}`}>
         {isInspect
-          ? 'Visual inspection complete — scan with Tech Vision to log diagnostic clues.'
-          : 'Diagnostic scan logged — review symptoms and possible causes below.'}
+          ? 'Visual inspection complete — enable Tech Vision and scan to record field measurements.'
+          : 'Field scan complete — review recorded observations and measurements below.'}
       </p>
 
       <div className="scan-card-actions">
@@ -68,25 +70,21 @@ export default function ScanCard({
         ))}
       </div>
 
-      {scanResult.observedConditions?.length > 0 && (
+      {scanResult.fieldNotes?.length > 0 && (
         <div className="observed-section clipboard-observed">
-          <h4>Observed Conditions</h4>
-          {scanResult.observedConditions.map((item) => (
-            <div key={item.condition} className="observed-item">
-              <p className="observed-condition">{item.condition}</p>
-              <p className="possible-label">Possible causes</p>
-              <ul>
-                {item.possibleCauses.map((cause) => (
-                  <li key={cause}>{cause}</li>
-                ))}
-              </ul>
-            </div>
+          <h4>Field Notes</h4>
+          {scanResult.fieldNotes.map((note) => (
+            <p key={note} className="observed-condition">
+              {note}
+            </p>
           ))}
         </div>
       )}
 
       <footer className="clipboard-footer">
-        {isInspect ? 'Use Scan to record clues for diagnosis.' : 'Clue candidates recorded — reason before final diagnosis.'}
+        {isInspect
+          ? 'Use Scan to log measurements for your service record.'
+          : 'Observations recorded — compare readings before selecting a diagnosis.'}
       </footer>
     </div>
   );

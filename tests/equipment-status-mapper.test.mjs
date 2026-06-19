@@ -4,6 +4,7 @@ import {
   mapValueToCategory,
   getHighlightColor,
   getComponentVisualStatus,
+  getComponentReading,
 } from '../src/logic/equipmentStatusMapper.js';
 
 test('mapValueToCategory maps HVAC statuses correctly', () => {
@@ -22,4 +23,10 @@ test('getComponentVisualStatus returns structured status', () => {
   const status = getComponentVisualStatus('condenserCoil', { condenserCoil: 'dirty' });
   assert.equal(status.category, 'fault');
   assert.equal(status.value, 'dirty');
+});
+
+test('getComponentReading returns neutral field text', () => {
+  const reading = getComponentReading('headPressure', { headPressure: 'high' });
+  assert.equal(reading, '312 PSIG');
+  assert.doesNotMatch(reading, /fault|elevated|restricted/i);
 });

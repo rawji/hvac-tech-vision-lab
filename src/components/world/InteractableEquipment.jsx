@@ -62,7 +62,7 @@ export default function InteractableEquipment({
       : isNearby
         ? '#38bdf8'
         : isScanned
-          ? '#4ade80'
+          ? '#38bdf8'
           : '#64748b';
 
   const ringOpacity = highlighted ? 0.95 : isScanned || isInspected ? 0.55 : 0.28;
@@ -70,13 +70,13 @@ export default function InteractableEquipment({
   const emissive = isPulsing
     ? '#38bdf8'
     : isInspectPulsing
-      ? '#a78bfa'
+      ? '#7dd3fc'
       : isSelected
         ? '#f59e0b'
         : isNearby
           ? '#2563eb'
           : isScanned
-            ? '#166534'
+            ? '#0ea5e9'
             : '#1e293b';
 
   const emissiveIntensity = isPulsing

@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useTechVision } from './TechVisionProvider.jsx';
+import { TECH_VISION } from '../../data/worldPalette.js';
 
 const FLOW_PATH = [
   [0, 0.5, 0],
@@ -9,17 +10,18 @@ const FLOW_PATH = [
   [4.5, 0.5, 0],
 ];
 
-export default function RefrigerantFlowOverlay({ inefficient = false, position = [0, 0, 0] }) {
+export default function RefrigerantFlowOverlay({ flowRate = 1, position = [0, 0, 0] }) {
   const groupRef = useRef();
   const { enabled } = useTechVision();
+  const clampedFlow = Math.max(0.2, Math.min(1.2, flowRate));
 
   const particles = useMemo(
     () =>
       Array.from({ length: 8 }, (_, i) => ({
         offset: i / 8,
-        speed: inefficient ? 0.15 : 0.35,
+        speed: 0.12 + clampedFlow * 0.28,
       })),
-    [inefficient]
+    [clampedFlow]
   );
 
   useFrame((state) => {
@@ -50,7 +52,7 @@ export default function RefrigerantFlowOverlay({ inefficient = false, position =
       {particles.map((p) => (
         <mesh key={p.offset}>
           <sphereGeometry args={[0.06, 6, 6]} />
-          <meshBasicMaterial color={inefficient ? '#facc15' : '#60a5fa'} />
+          <meshBasicMaterial color={TECH_VISION.flow} transparent opacity={0.78} />
         </mesh>
       ))}
     </group>

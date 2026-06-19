@@ -12,10 +12,10 @@ export function evaluateDiagnosis(mission, selectedDiagnosis) {
 
 export function getDiagnosisHint(scannedCount) {
   if (scannedCount === 0) {
-    return 'Inspect components in normal mode, then enable Tech Vision and scan at least two targets.';
+    return 'Inspect equipment on site, then enable Tech Vision and scan at least two targets to record measurements.';
   }
   if (scannedCount === 1) {
-    return 'Scan one more component with Tech Vision ON to gather enough diagnostic clues.';
+    return 'Scan one more component with Tech Vision ON to gather additional field readings.';
   }
-  return 'Review your clues and select the most likely diagnosis.';
+  return 'Review your recorded observations and select your diagnosis.';
 }

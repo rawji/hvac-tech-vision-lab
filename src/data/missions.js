@@ -1,9 +1,10 @@
 export const missions = [
   {
-    id: 'dirty-condenser-001',
+    id: 'no-cool-001',
     title: 'Service Call: No Cooling Reported',
-    customerComplaint: 'Homeowner says the system runs, but the house is not cooling well.',
-    objective: 'Inspect the outdoor condenser and record findings before choosing a diagnosis.',
+    customerComplaint: 'The system runs, but the house is not cooling well.',
+    objective:
+      'Document field observations and measurements. Inspect available equipment, record readings, and select your diagnosis after sufficient evidence.',
     equipmentHealth: {
       compressor: 'good',
       condenserFan: 'good',
@@ -20,8 +21,8 @@ export const missions = [
       outdoorAirflow: 'restricted',
       indoorAirflow: 'normal',
       dischargeTemperature: 'high',
-      returnAirTemperature: '78F',
-      supplyAirTemperature: '70F',
+      returnAirTemperature: '78°F',
+      supplyAirTemperature: '70°F',
     },
     scanTargets: [
       'thermostat',
@@ -33,41 +34,48 @@ export const missions = [
       'airHandler',
       'fanMotor',
       'contactor',
+      'disconnect',
     ],
     diagnosisOptions: [
-      'Dirty condenser coil',
-      'Low refrigerant',
-      'Bad thermostat',
-      'Bad blower motor',
-      'Bad compressor',
+      'Outdoor coil airflow restriction',
+      'Refrigerant undercharge',
+      'Thermostat control issue',
+      'Indoor blower airflow problem',
+      'Compressor not pumping',
     ],
-    correctDiagnosis: 'Dirty condenser coil',
+    correctDiagnosis: 'Outdoor coil airflow restriction',
     relatedConcepts: [
       'Heat rejection',
       'Condenser operation',
       'Outdoor airflow',
-      'High head pressure',
+      'Head pressure',
       'Temperature split',
       'Refrigeration cycle basics',
     ],
     feedback: {
       correct:
-        'Correct. The condenser coil is dirty, restricting outdoor airflow and reducing heat rejection. ' +
-        'This raises head pressure while suction pressure stays relatively normal. The compressor runs ' +
-        'under elevated load, discharge temperature rises, and the temperature split weakens even though ' +
-        'indoor airflow and refrigerant charge appear acceptable.',
+        'Your diagnosis matches the field pattern. The recorded readings — elevated liquid line pressure, ' +
+        'visible debris on the condenser fin surface, reduced air movement at the coil face, narrow temperature ' +
+        'split, and relatively normal suction pressure — are consistent with restricted outdoor coil airflow ' +
+        'limiting heat rejection.',
       incorrect:
-        'That diagnosis does not fully match the clues you gathered. Review scan data for head pressure, ' +
-        'outdoor airflow, condenser coil condition, and temperature split. The observed pattern points toward ' +
-        'a condenser-side heat rejection problem rather than the cause you selected.',
+        'Your selected diagnosis does not best fit the measurements you recorded. Compare liquid line pressure, ' +
+        'suction pressure, temperature split, condenser fin condition, and air movement at the coil face before ' +
+        'choosing again.',
     },
   },
 ];
 
 export function getMissionById(id) {
+  if (id === LEGACY_MISSION_ID || id === missions[0].id) {
+    return missions[0];
+  }
   return missions.find((m) => m.id === id) ?? null;
 }
 
 export function getDefaultMission() {
   return missions[0];
 }
+
+// Legacy id alias for bookmarks and tests
+export const LEGACY_MISSION_ID = 'dirty-condenser-001';
