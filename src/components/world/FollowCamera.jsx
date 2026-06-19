@@ -7,8 +7,9 @@ const MIN_DISTANCE = 5.5;
 const MAX_DISTANCE = 14;
 const HEIGHT = 6.5;
 const LOOK_AT_HEIGHT = 1.1;
-const DRAG_SENSITIVITY = 0.004;
-const MAX_DRAG = 1.2;
+const DRAG_YAW_SENSITIVITY = 0.004;
+const DRAG_PITCH_SENSITIVITY = 0.0014;
+const MAX_ORBIT_PITCH = 0.35;
 const DRAG_THRESHOLD = 6;
 const ZOOM_SENSITIVITY = 0.55;
 
@@ -31,14 +32,16 @@ export default function FollowCamera({
   uiStable = false,
 }) {
   const { camera, gl } = useThree();
-  const yaw = useRef(Math.PI);
-  const manualYawOffset = useRef(0);
+  const orbitYaw = useRef(Math.PI);
+  const orbitPitch = useRef(0);
+  const userOrbitLocked = useRef(false);
   const distance = useRef(DEFAULT_DISTANCE);
   const orbitActive = useRef(false);
   const orbitPointerDown = useRef(false);
   const orbitPointerId = useRef(null);
   const pointerOverCanvas = useRef(false);
   const lastPointerX = useRef(0);
+  const lastPointerY = useRef(0);
   const lastSwingX = useRef(0);
   const lastSwingY = useRef(0);
   const lastMouseMoveTime = useRef(0);
@@ -55,29 +58,32 @@ export default function FollowCamera({
   uiStableRef.current = uiStable;
 
   useEffect(() => {
-    manualYawOffset.current = 0;
+    userOrbitLocked.current = false;
+    orbitPitch.current = 0;
+    orbitYaw.current = playerFacing + Math.PI;
     distance.current = DEFAULT_DISTANCE;
     swingTargetYaw.current = 0;
     swingTargetPitch.current = 0;
     swingYaw.current = 0;
     swingPitch.current = 0;
-    yaw.current = playerFacing + Math.PI;
     lookTarget.current.set(playerPosition[0], LOOK_AT_HEIGHT, playerPosition[2]);
     updateCameraPosition();
     camera.lookAt(lookTarget.current);
   }, [resetKey, camera]);
 
   function updateCameraPosition() {
-    const effectiveYaw = yaw.current + manualYawOffset.current + swingYaw.current;
+    const effectiveYaw = orbitYaw.current + swingYaw.current;
     desiredPos.current.set(
       playerPosition[0] + Math.sin(effectiveYaw) * distance.current,
-      HEIGHT + swingPitch.current * 2.2,
+      HEIGHT + orbitPitch.current * 2.2 + swingPitch.current * 2.2,
       playerPosition[2] + Math.cos(effectiveYaw) * distance.current
     );
   }
 
   function applySwingFromDelta(dx, dy) {
-    if (uiStableRef.current || orbitActive.current || orbitPointerDown.current) return;
+    if (uiStableRef.current || userOrbitLocked.current || orbitActive.current || orbitPointerDown.current) {
+      return;
+    }
 
     swingTargetYaw.current = THREE.MathUtils.clamp(
       swingTargetYaw.current + dx * SWING_DELTA_SENSITIVITY,
@@ -92,14 +98,31 @@ export default function FollowCamera({
     lastMouseMoveTime.current = performance.now();
   }
 
+  function applyOrbitDrag(dx, dy) {
+    orbitYaw.current -= dx * DRAG_YAW_SENSITIVITY;
+    orbitPitch.current = THREE.MathUtils.clamp(
+      orbitPitch.current - dy * DRAG_PITCH_SENSITIVITY,
+      -MAX_ORBIT_PITCH,
+      MAX_ORBIT_PITCH
+    );
+    userOrbitLocked.current = true;
+    swingTargetYaw.current = 0;
+    swingTargetPitch.current = 0;
+    swingYaw.current = 0;
+    swingPitch.current = 0;
+  }
+
   useFrame((_, delta) => {
     if (!enabled) return;
 
-    const targetYaw = playerFacing + Math.PI;
-    const followStrength = orbitActive.current ? 0 : 1 - Math.exp(-5 * delta);
-    yaw.current += (targetYaw - yaw.current) * followStrength;
+    if (!userOrbitLocked.current && !orbitActive.current) {
+      const targetYaw = playerFacing + Math.PI;
+      const followStrength = 1 - Math.exp(-5 * delta);
+      orbitYaw.current += (targetYaw - orbitYaw.current) * followStrength;
+    }
 
-    const swingAllowed = !orbitActive.current && !orbitPointerDown.current;
+    const swingAllowed =
+      !userOrbitLocked.current && !orbitActive.current && !orbitPointerDown.current;
     const idle =
       performance.now() - lastMouseMoveTime.current > SWING_IDLE_MS || uiStableRef.current;
     const decayRate = uiStableRef.current ? UI_STABLE_DECAY : SWING_DECAY;
@@ -119,12 +142,12 @@ export default function FollowCamera({
 
     if (focusPosition) {
       focusVec.current.set(focusPosition[0], LOOK_AT_HEIGHT + 0.15, focusPosition[2]);
-      lookTarget.current.copy(playerLook).lerp(focusVec.current, 0.22);
+      lookTarget.current.copy(playerLook).lerp(focusVec.current, userOrbitLocked.current ? 0.12 : 0.22);
     } else {
       lookTarget.current.copy(playerLook);
     }
 
-    lookTarget.current.y += swingPitch.current * 1.4;
+    lookTarget.current.y += orbitPitch.current * 1.2 + swingPitch.current * 1.4;
 
     updateCameraPosition();
 
@@ -143,6 +166,7 @@ export default function FollowCamera({
       orbitActive.current = false;
       orbitPointerId.current = pointerId;
       lastPointerX.current = clientX;
+      lastPointerY.current = clientY;
       lastSwingX.current = clientX;
       lastSwingY.current = clientY;
       if (dragRef) {
@@ -199,13 +223,10 @@ export default function FollowCamera({
 
         if (orbitActive.current) {
           const dx = e.clientX - lastPointerX.current;
+          const dy = e.clientY - lastPointerY.current;
           lastPointerX.current = e.clientX;
-          manualYawOffset.current -= dx * DRAG_SENSITIVITY;
-          manualYawOffset.current = THREE.MathUtils.clamp(
-            manualYawOffset.current,
-            -MAX_DRAG,
-            MAX_DRAG
-          );
+          lastPointerY.current = e.clientY;
+          applyOrbitDrag(dx, dy);
         }
       }
 
@@ -278,13 +299,10 @@ export default function FollowCamera({
 
       if (orbitActive.current) {
         const dx = touch.clientX - lastPointerX.current;
+        const dy = touch.clientY - lastPointerY.current;
         lastPointerX.current = touch.clientX;
-        manualYawOffset.current -= dx * DRAG_SENSITIVITY;
-        manualYawOffset.current = THREE.MathUtils.clamp(
-          manualYawOffset.current,
-          -MAX_DRAG,
-          MAX_DRAG
-        );
+        lastPointerY.current = touch.clientY;
+        applyOrbitDrag(dx, dy);
       }
     };
 
