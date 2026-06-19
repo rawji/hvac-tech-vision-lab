@@ -364,7 +364,6 @@ export default function HVACWorld({
             appearance={appearance}
             cameraResetKey={cameraResetKey}
             onReady={onReady}
-            isNavigating={isNavigating}
             onNavigatingChange={onNavigatingChange}
           />
         </Canvas>
