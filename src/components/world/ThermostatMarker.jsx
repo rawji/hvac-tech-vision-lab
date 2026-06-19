@@ -2,10 +2,10 @@ import ComponentTag from '../techVision/ComponentTag.jsx';
 import EquipmentZoneLabel from './EquipmentZoneLabel.jsx';
 import InteractableEquipment from './InteractableEquipment.jsx';
 
-export default function ThermostatMarker({ equipmentHealth, onSelect, isNearby, isScanned }) {
+export default function ThermostatMarker({ equipmentHealth, onSelect, isNearby, isScanned, scanPulseTarget }) {
   return (
-    <group position={[-2, 1.2, 0.15]}>
-      <EquipmentZoneLabel label="Thermostat" position={[0, 0.65, 0]} accent="#a78bfa" />
+    <group position={[-2.4, 1.15, 0.35]}>
+      <EquipmentZoneLabel label="Thermostat" position={[0, 0.55, 0]} accent="#a78bfa" />
       <InteractableEquipment
         id="thermostat"
         label="Thermostat"
@@ -15,12 +15,13 @@ export default function ThermostatMarker({ equipmentHealth, onSelect, isNearby, 
         onSelect={onSelect}
         isNearby={isNearby === 'thermostat'}
         isScanned={isScanned('thermostat')}
+        isPulsing={scanPulseTarget === 'thermostat'}
       />
       <ComponentTag
         label="Thermostat"
         componentKey="thermostat"
         equipmentHealth={equipmentHealth}
-        position={[0, 0.5, 0]}
+        position={[0, 0.45, 0]}
         visible={isNearby === 'thermostat'}
       />
     </group>

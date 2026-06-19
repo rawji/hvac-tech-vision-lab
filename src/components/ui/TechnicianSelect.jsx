@@ -13,12 +13,11 @@ export default function TechnicianSelect({ onSelect, onBack }) {
     <div className="screen select-screen">
       <div className="select-content">
         <h2>Select Your Technician</h2>
-        <p>Choose a character for the service call training mission.</p>
+        <p>Choose a character for the no-cooling service call.</p>
 
         <div className="select-group">
-          <h3>Technician</h3>
           <div className="option-grid">
-            {TECHNICIANS.map((tech) => (
+            {TECHNICIANS.map((tech) =>
               APPEARANCES.map((appearance) => (
                 <button
                   key={`${tech.id}-${appearance.id}`}
@@ -26,12 +25,17 @@ export default function TechnicianSelect({ onSelect, onBack }) {
                   className="option-card"
                   onClick={() => onSelect(tech.id, appearance.id)}
                 >
-                  <div className={`avatar-preview ${tech.id} ${appearance.id}`} aria-hidden="true" />
+                  <div className={`avatar-preview-v2 ${tech.id} ${appearance.id}`} aria-hidden="true">
+                    <span className="preview-hat" />
+                    <span className="preview-head" />
+                    <span className="preview-body" />
+                    <span className="preview-legs" />
+                  </div>
                   <span className="option-title">{tech.label}</span>
                   <span className="option-sub">{appearance.label}</span>
                 </button>
               ))
-            ))}
+            )}
           </div>
         </div>
 

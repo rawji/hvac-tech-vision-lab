@@ -1,5 +1,6 @@
 import { buildScanResult } from '../data/scanDefinitions.js';
 import { mergeClues } from './diagnosticRules.js';
+import { getNewClueToastMessage } from './clueToast.js';
 
 export const APP_PHASE = {
   LANDING: 'landing',
@@ -27,6 +28,8 @@ export const initialMissionState = {
   missionCompleted: false,
   feedback: null,
   cameraResetKey: 0,
+  clueToast: null,
+  scanPulseTarget: null,
 };
 
 export function missionReducer(state, action) {
@@ -84,6 +87,7 @@ export function missionReducer(state, action) {
         : [...state.scannedTargets, action.targetId];
 
       const discoveredClues = mergeClues(state.discoveredClues, scanResult.observedConditions);
+      const clueToast = getNewClueToastMessage(state.discoveredClues, discoveredClues);
 
       return {
         ...state,
@@ -92,8 +96,16 @@ export function missionReducer(state, action) {
         interactionMode: 'scan',
         scannedTargets,
         discoveredClues,
+        clueToast: clueToast ?? state.clueToast,
+        scanPulseTarget: action.targetId,
       };
     }
+
+    case 'CLEAR_CLUE_TOAST':
+      return { ...state, clueToast: null };
+
+    case 'CLEAR_SCAN_PULSE':
+      return { ...state, scanPulseTarget: null };
 
     case 'CLEAR_SCAN':
       return {

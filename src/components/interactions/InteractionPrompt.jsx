@@ -7,32 +7,21 @@ export default function InteractionPrompt({
   if (!target) return null;
 
   return (
-    <div className="interaction-prompt">
+    <div className="interaction-prompt desktop-only">
       <p>
         <strong>{target.label}</strong> nearby
       </p>
-      <p className="prompt-detail">
-        <strong>Inspect (E)</strong> — view component readings in normal mode.
-      </p>
-      <p className="prompt-detail">
-        <strong>Scan (F)</strong> — record diagnostic clues when Tech Vision is ON.
-      </p>
-      {!techVisionEnabled && (
-        <p className="prompt-hint">Toggle Tech Vision before scanning for full diagnostic clues.</p>
-      )}
       <div className="prompt-actions">
         <button type="button" className="btn btn-small" onClick={() => onInspect(target.id)}>
           Inspect (E)
         </button>
-        <button
-          type="button"
-          className="btn btn-small btn-accent"
-          onClick={() => onScan(target.id)}
-          disabled={!techVisionEnabled}
-          title={techVisionEnabled ? 'Run diagnostic scan' : 'Enable Tech Vision to scan'}
-        >
-          Scan (F)
-        </button>
+        {techVisionEnabled ? (
+          <button type="button" className="btn btn-small btn-accent" onClick={() => onScan(target.id)}>
+            Scan (F)
+          </button>
+        ) : (
+          <span className="prompt-hint-inline">Enable Tech Vision to scan</span>
+        )}
       </div>
     </div>
   );

@@ -42,7 +42,7 @@ export const scanDefinitions = {
     observedConditions: (health) => [
       {
         condition: health.outdoorAirflow === 'restricted' ? 'Outdoor airflow restricted' : 'Outdoor airflow normal',
-        possibleCauses: ['Dirty condenser coil', 'Blocked outdoor coil', 'Fan airflow obstruction'],
+        possibleCauses: ['Outdoor coil fouling', 'Blocked outdoor coil', 'Fan airflow obstruction'],
       },
     ],
   },
@@ -52,18 +52,18 @@ export const scanDefinitions = {
     label: 'Condenser Coil',
     title: 'CONDENSER COIL STATUS',
     fields: (health) => [
-      { label: 'Surface condition', value: health.condenserCoil === 'dirty' ? 'Dirty' : 'Clean', category: health.condenserCoil === 'dirty' ? 'fault' : 'normal' },
+      { label: 'Surface condition', value: health.condenserCoil === 'dirty' ? 'Surface fouling detected' : 'Clean', category: health.condenserCoil === 'dirty' ? 'fault' : 'normal' },
       { label: 'Outdoor airflow', value: health.outdoorAirflow === 'restricted' ? 'Restricted' : 'Normal', category: health.outdoorAirflow === 'restricted' ? 'warning' : 'normal' },
       { label: 'Heat rejection', value: health.headPressure === 'high' ? 'Weak' : 'Normal', category: health.headPressure === 'high' ? 'warning' : 'normal' },
-      { label: 'Head pressure trend', value: health.headPressure === 'high' ? 'High' : 'Normal', category: health.headPressure === 'high' ? 'warning' : 'normal' },
+      { label: 'Head pressure trend', value: health.headPressure === 'high' ? 'Elevated' : 'Normal', category: health.headPressure === 'high' ? 'warning' : 'normal' },
     ],
     observedConditions: (health) => [
       {
-        condition: 'High head pressure',
-        possibleCauses: ['Dirty condenser coil', 'Overcharge', 'Outdoor airflow restriction'],
+        condition: 'Head pressure trend elevated',
+        possibleCauses: ['Outdoor coil fouling', 'Overcharge', 'Outdoor airflow restriction'],
       },
       {
-        condition: health.condenserCoil === 'dirty' ? 'Coil surface fouled' : 'Coil surface clean',
+        condition: health.condenserCoil === 'dirty' ? 'Coil surface fouling detected' : 'Coil surface clean',
         possibleCauses: health.condenserCoil === 'dirty'
           ? ['Debris buildup', 'Lack of maintenance', 'Restricted airflow path']
           : ['Normal condition'],

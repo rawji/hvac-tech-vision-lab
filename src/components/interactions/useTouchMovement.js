@@ -8,7 +8,7 @@ const DIRECTIONS = {
   right: [1, 0],
 };
 
-export function useTouchMovement(onMove, enabled = true) {
+export function useTouchMovement(onMove, enabled = true, cameraBasisRef) {
   const activeRef = useRef(new Set());
 
   const setDirection = (name, active) => {
@@ -26,17 +26,24 @@ export function useTouchMovement(onMove, enabled = true) {
       const delta = Math.min((time - lastTime) / 1000, 0.05);
       lastTime = time;
 
-      let dx = 0;
-      let dz = 0;
+      let ix = 0;
+      let iz = 0;
       for (const name of activeRef.current) {
-        const [ddx, ddz] = DIRECTIONS[name];
-        dx += ddx;
-        dz += ddz;
+        const [dx, dz] = DIRECTIONS[name];
+        ix += dx;
+        iz += dz;
       }
 
-      if (dx !== 0 || dz !== 0) {
-        const len = Math.hypot(dx, dz) || 1;
-        onMove([(dx / len) * MOVE_SPEED * delta, (dz / len) * MOVE_SPEED * delta]);
+      if (ix !== 0 || iz !== 0) {
+        const basis = cameraBasisRef?.current;
+        let mx = ix;
+        let mz = iz;
+        if (basis) {
+          mx = basis.right[0] * ix + basis.forward[0] * (-iz);
+          mz = basis.right[1] * ix + basis.forward[1] * (-iz);
+        }
+        const len = Math.hypot(mx, mz) || 1;
+        onMove([(mx / len) * MOVE_SPEED * delta, (mz / len) * MOVE_SPEED * delta]);
       }
 
       frameId = requestAnimationFrame(tick);
@@ -44,7 +51,7 @@ export function useTouchMovement(onMove, enabled = true) {
 
     frameId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameId);
-  }, [enabled, onMove]);
+  }, [enabled, onMove, cameraBasisRef]);
 
   return { setDirection };
 }

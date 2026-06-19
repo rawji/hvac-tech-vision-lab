@@ -34,6 +34,21 @@ test('SCAN_TARGET records diagnostic scan and clues', () => {
   assert.ok(state.discoveredClues.length > 0);
 });
 
+test('SCAN_TARGET records clue toast for new conditions', () => {
+  const mission = getDefaultMission();
+  let state = { ...initialMissionState, techVisionEnabled: true };
+
+  state = missionReducer(state, {
+    type: 'SCAN_TARGET',
+    targetId: 'condenserCoil',
+    equipmentHealth: mission.equipmentHealth,
+  });
+
+  assert.ok(state.clueToast);
+  assert.match(state.clueToast, /Clue logged:/);
+  assert.equal(state.scanPulseTarget, 'condenserCoil');
+});
+
 test('RESET_VIEW restores default player position and increments camera key', () => {
   let state = {
     ...initialMissionState,

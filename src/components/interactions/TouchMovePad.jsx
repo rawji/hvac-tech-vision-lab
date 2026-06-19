@@ -2,6 +2,7 @@ export default function TouchMovePad({ setDirection }) {
   const bind = (name) => ({
     onPointerDown: (e) => {
       e.preventDefault();
+      e.stopPropagation();
       e.currentTarget.setPointerCapture(e.pointerId);
       setDirection(name, true);
     },
@@ -18,7 +19,7 @@ export default function TouchMovePad({ setDirection }) {
   });
 
   return (
-    <div className="touch-move-pad" aria-label="On-screen movement controls">
+    <div className="touch-move-pad" aria-label="Movement pad">
       <button type="button" className="touch-btn touch-up" aria-label="Move forward" {...bind('forward')}>
         ▲
       </button>
@@ -26,6 +27,7 @@ export default function TouchMovePad({ setDirection }) {
         <button type="button" className="touch-btn touch-left" aria-label="Move left" {...bind('left')}>
           ◀
         </button>
+        <div className="touch-center" aria-hidden="true" />
         <button type="button" className="touch-btn touch-right" aria-label="Move right" {...bind('right')}>
           ▶
         </button>
@@ -33,7 +35,6 @@ export default function TouchMovePad({ setDirection }) {
       <button type="button" className="touch-btn touch-down" aria-label="Move back" {...bind('back')}>
         ▼
       </button>
-      <p className="touch-note">Touch controls · Desktop keyboard recommended</p>
     </div>
   );
 }

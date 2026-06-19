@@ -1,10 +1,34 @@
 const STEPS = [
-  { id: 1, label: 'Read the customer complaint', hint: 'Review the mission panel above.' },
-  { id: 2, label: 'Walk to equipment', hint: 'Use WASD to reach the thermostat, air handler, or outdoor condenser.' },
-  { id: 3, label: 'Inspect components', hint: 'Stand close and press E for a basic equipment reading.' },
-  { id: 4, label: 'Toggle Tech Vision', hint: 'Press V or click Diagnostic Scanner in the header.' },
-  { id: 5, label: 'Scan diagnostic clues', hint: 'With Tech Vision ON, press F near equipment to record clues.' },
-  { id: 6, label: 'Choose diagnosis', hint: 'Pick the most likely cause after scanning at least two components.' },
+  {
+    id: 1,
+    label: 'Read the customer complaint',
+    hint: 'Review the mission panel. Customer reports weak cooling.',
+  },
+  {
+    id: 2,
+    label: 'Walk to equipment',
+    hint: 'Use WASD toward the thermostat, air handler, or outdoor condenser.',
+  },
+  {
+    id: 3,
+    label: 'Inspect components',
+    hint: 'Stand close and press E for a basic equipment reading.',
+  },
+  {
+    id: 4,
+    label: 'Toggle Tech Vision',
+    hint: 'Press V or click Diagnostic Scanner for the diagnostic overlay.',
+  },
+  {
+    id: 5,
+    label: 'Scan diagnostic clues',
+    hint: 'With Tech Vision ON, press F near equipment to log clues.',
+  },
+  {
+    id: 6,
+    label: 'Choose diagnosis',
+    hint: 'Scan at least two components, then submit your diagnosis.',
+  },
 ];
 
 function getCurrentStep(state) {

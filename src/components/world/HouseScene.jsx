@@ -3,38 +3,54 @@ export default function HouseScene() {
     <group>
       {/* Ground / yard */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, 0, 0]}>
-        <planeGeometry args={[20, 20]} />
-        <meshStandardMaterial color="#3d6b3d" />
+        <planeGeometry args={[18, 18]} />
+        <meshStandardMaterial color="#3f6f3a" roughness={1} />
       </mesh>
-      {/* Driveway */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 5]}>
-        <planeGeometry args={[4, 6]} />
-        <meshStandardMaterial color="#6b7280" />
+
+      {/* House main body */}
+      <mesh position={[-3.8, 1.35, -1.5]} castShadow receiveShadow>
+        <boxGeometry args={[5.2, 2.7, 4.5]} />
+        <meshStandardMaterial color="#d6cfc4" roughness={0.85} />
       </mesh>
-      {/* House base */}
-      <mesh position={[-3, 1.2, -2]} castShadow receiveShadow>
-        <boxGeometry args={[5, 2.4, 4]} />
-        <meshStandardMaterial color="#c4b5a0" />
+
+      {/* Garage bump-out */}
+      <mesh position={[-1.2, 1, -2.8]} castShadow receiveShadow>
+        <boxGeometry args={[2.2, 2, 2.2]} />
+        <meshStandardMaterial color="#c9bfb3" roughness={0.85} />
       </mesh>
-      {/* Roof */}
-      <mesh position={[-3, 2.8, -2]} rotation={[0, 0, 0]} castShadow>
-        <coneGeometry args={[3.6, 1.4, 4]} />
-        <meshStandardMaterial color="#7c2d12" />
+
+      {/* Roof main */}
+      <mesh position={[-3.8, 3.35, -1.5]} rotation={[0, Math.PI / 4, 0]} castShadow>
+        <coneGeometry args={[4.2, 1.6, 4]} />
+        <meshStandardMaterial color="#7c2d12" roughness={0.9} />
       </mesh>
-      {/* Door */}
-      <mesh position={[-3, 0.9, 0.01]}>
-        <boxGeometry args={[0.9, 1.8, 0.1]} />
+
+      {/* Porch overhang */}
+      <mesh position={[-3.8, 1.85, 0.85]} castShadow>
+        <boxGeometry args={[3.2, 0.12, 1.2]} />
         <meshStandardMaterial color="#78350f" />
       </mesh>
-      {/* Window */}
-      <mesh position={[-1.2, 1.4, 0.01]}>
-        <boxGeometry args={[1.2, 0.8, 0.08]} />
-        <meshStandardMaterial color="#93c5fd" emissive="#1e3a5f" emissiveIntensity={0.2} />
+
+      {/* Front door */}
+      <mesh position={[-3.8, 0.95, 0.35]}>
+        <boxGeometry args={[1, 1.9, 0.12]} />
+        <meshStandardMaterial color="#5c4033" roughness={0.8} />
       </mesh>
-      {/* Utility closet marker (indoor) */}
-      <mesh position={[-4.5, 0.5, -1]}>
-        <boxGeometry args={[0.8, 1, 0.8]} />
-        <meshStandardMaterial color="#64748b" />
+
+      {/* Windows */}
+      <mesh position={[-2.1, 1.55, 0.32]}>
+        <boxGeometry args={[1.3, 0.9, 0.08]} />
+        <meshStandardMaterial color="#bae6fd" emissive="#0c4a6e" emissiveIntensity={0.12} />
+      </mesh>
+      <mesh position={[-5.2, 1.55, 0.32]}>
+        <boxGeometry args={[1.1, 0.9, 0.08]} />
+        <meshStandardMaterial color="#bae6fd" emissive="#0c4a6e" emissiveIntensity={0.12} />
+      </mesh>
+
+      {/* Thermostat wall section */}
+      <mesh position={[-2.4, 1.15, 0.28]}>
+        <boxGeometry args={[0.6, 0.5, 0.06]} />
+        <meshStandardMaterial color="#e7e5e4" />
       </mesh>
     </group>
   );

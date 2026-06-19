@@ -1,18 +1,18 @@
 export const OBSERVED_CONDITION_RULES = {
   highHeadPressure: {
-    condition: 'High Head Pressure',
-    possibleCauses: ['Dirty condenser coil', 'Overcharge', 'Outdoor airflow restriction'],
+    condition: 'Head pressure trend elevated',
+    possibleCauses: ['Outdoor coil fouling', 'Overcharge', 'Outdoor airflow restriction'],
   },
   weakTemperatureSplit: {
     condition: 'Weak Temperature Split',
     possibleCauses: ['Poor heat transfer', 'Airflow problem', 'Refrigerant circuit issue'],
   },
   restrictedOutdoorAirflow: {
-    condition: 'Outdoor Airflow Restricted',
-    possibleCauses: ['Dirty condenser coil', 'Blocked outdoor coil', 'Fan airflow obstruction'],
+    condition: 'Outdoor airflow restricted',
+    possibleCauses: ['Outdoor coil fouling', 'Blocked outdoor coil', 'Fan airflow obstruction'],
   },
   dirtyCondenserCoil: {
-    condition: 'Coil Surface Fouled',
+    condition: 'Coil surface fouling detected',
     possibleCauses: ['Debris buildup', 'Lack of maintenance', 'Restricted airflow path'],
   },
   elevatedDischargeTemp: {

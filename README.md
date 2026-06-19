@@ -70,17 +70,19 @@ Optional recovery during demo: **Reset View** restores player position and camer
 
 | Input | Action |
 |-------|--------|
-| WASD / Arrow keys | Move technician |
+| WASD / Arrow keys | Move technician (camera-relative) |
+| Right-drag on scene | Gently adjust camera angle |
 | E | Inspect nearby equipment (normal mode) |
 | F | Diagnostic scan (Tech Vision must be ON) |
 | V | Toggle Tech Vision Mode |
-| Diagnostic Scanner button | Toggle Tech Vision Mode |
-| On-screen arrows | Move on touch devices (lightweight fallback) |
+| Esc | Close scan card / hide mission details (mobile) |
+| On-screen pad | Move on touch devices (camera-relative) |
+| World overlay buttons | Tech Vision, Inspect, Scan (mobile-friendly) |
 | Reset View | Restore player position and camera |
 
 **Inspect vs Scan:** Inspect works anytime and shows component readings. Scan with Tech Vision ON records diagnostic clues toward your diagnosis. Tech Vision reveals clues and possible causes — not the final answer.
 
-**Desktop recommended:** Keyboard + mouse provides the best POC experience. Touch movement is available but limited.
+**Desktop recommended** for the best experience. Mobile uses a large touch pad, world overlay action buttons, and a collapsible mission details drawer.
 
 ## Tech Vision Mode
 

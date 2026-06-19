@@ -1,19 +1,22 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, Sky } from '@react-three/drei';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Sky } from '@react-three/drei';
 import HouseScene from './HouseScene.jsx';
+import PropertyDetails from './PropertyDetails.jsx';
 import CondenserUnit from './CondenserUnit.jsx';
 import AirHandlerZone from './AirHandlerZone.jsx';
 import ThermostatMarker from './ThermostatMarker.jsx';
 import TechnicianAvatar from './TechnicianAvatar.jsx';
+import FollowCamera from './FollowCamera.jsx';
 import TechVisionOverlay from '../techVision/TechVisionOverlay.jsx';
+import ScannerReticle from '../techVision/ScannerReticle.jsx';
 import { TechVisionProvider } from '../techVision/TechVisionProvider.jsx';
-import { useKeyboardControls } from '../interactions/useKeyboardControls.js';
+import PlayerController from './PlayerController.jsx';
 import { useProximityInteraction } from '../interactions/useProximityInteraction.js';
 import { applyMovementDelta } from '../../logic/worldBounds.js';
 
 const INTERACTION_TARGETS = [
-  { id: 'thermostat', label: 'Thermostat', position: [-2, 0, 0.15] },
+  { id: 'thermostat', label: 'Thermostat', position: [-2.4, 0, 0.35] },
   { id: 'filter', label: 'Filter', position: [-4.5, 0, -0.5] },
   { id: 'airHandler', label: 'Air Handler', position: [-4.5, 0, -1] },
   { id: 'condenser', label: 'Condenser Unit', position: [4, 0, -1] },
@@ -24,18 +27,11 @@ const INTERACTION_TARGETS = [
   { id: 'contactor', label: 'Contactor', position: [3.7, 0, -1.5] },
 ];
 
-const DEFAULT_CAMERA = { position: [0, 8, 10], fov: 50 };
+const TARGET_POSITIONS = Object.fromEntries(
+  INTERACTION_TARGETS.map((t) => [t.id, t.position])
+);
 
-function CameraReset({ resetKey, playerPosition }) {
-  const { camera } = useThree();
-
-  useEffect(() => {
-    camera.position.set(...DEFAULT_CAMERA.position);
-    camera.lookAt(playerPosition[0], 0, playerPosition[2]);
-  }, [resetKey, camera, playerPosition]);
-
-  return null;
-}
+const DEFAULT_CAMERA = { position: [0, 6.5, 8.5], fov: 48, near: 0.1, far: 100 };
 
 function WorldContent({
   equipmentHealth,
@@ -46,22 +42,38 @@ function WorldContent({
   onScan,
   techVisionEnabled,
   scannedTargets,
+  scanPulseTarget,
   technician,
   appearance,
   cameraResetKey,
+  onReady,
+  cameraBasisRef,
 }) {
   const posRef = useRef(playerPosition);
-  const controlsRef = useRef();
+  const facingRef = useRef(0);
+  const [facing, setFacing] = useState(0);
+  const [isMoving, setIsMoving] = useState(false);
   posRef.current = playerPosition;
 
   const handleMove = useCallback(
     ([dx, dz]) => {
+      if (Math.abs(dx) > 0.0001 || Math.abs(dz) > 0.0001) {
+        facingRef.current = Math.atan2(dx, dz);
+        setFacing(facingRef.current);
+      }
       onMove(applyMovementDelta(posRef.current, dx, dz));
     },
     [onMove]
   );
 
-  useKeyboardControls(handleMove, true);
+  const handleFacingChange = useCallback((angle) => {
+    facingRef.current = angle;
+    setFacing(angle);
+  }, []);
+
+  const handleMovingChange = useCallback((moving) => {
+    setIsMoving(moving);
+  }, []);
 
   const nearby = useProximityInteraction(playerPosition, INTERACTION_TARGETS);
 
@@ -70,8 +82,8 @@ function WorldContent({
   }, [nearby, onNearbyChange]);
 
   useEffect(() => {
-    controlsRef.current?.reset();
-  }, [cameraResetKey]);
+    onReady?.();
+  }, [onReady]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -85,47 +97,58 @@ function WorldContent({
 
   const isScanned = useCallback((id) => scannedTargets.includes(id), [scannedTargets]);
   const nearbyId = nearby?.id ?? null;
+  const reticlePos = nearby
+    ? [TARGET_POSITIONS[nearby.id][0], 1.3, TARGET_POSITIONS[nearby.id][2]]
+    : [0, 1.3, 0];
 
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight castShadow position={[8, 12, 4]} intensity={1.1} shadow-mapSize={[512, 512]} />
-      <Sky sunPosition={[100, 20, 100]} turbidity={0.1} rayleigh={0.5} />
+      <ambientLight intensity={0.45} />
+      <directionalLight castShadow position={[10, 14, 6]} intensity={1.15} shadow-mapSize={[1024, 1024]} />
+      <hemisphereLight args={['#bae6fd', '#3f6f3a', 0.35]} />
+      <Sky sunPosition={[100, 12, 80]} turbidity={0.4} rayleigh={0.8} mieCoefficient={0.005} />
       <HouseScene />
+      <PropertyDetails />
       <CondenserUnit
         equipmentHealth={equipmentHealth}
         onSelect={onInspect}
         isNearby={nearbyId}
         isScanned={isScanned}
+        scanPulseTarget={scanPulseTarget}
       />
       <AirHandlerZone
         equipmentHealth={equipmentHealth}
         onSelect={onInspect}
         isNearby={nearbyId}
         isScanned={isScanned}
+        scanPulseTarget={scanPulseTarget}
       />
       <ThermostatMarker
         equipmentHealth={equipmentHealth}
         onSelect={onInspect}
         isNearby={nearbyId}
         isScanned={isScanned}
+        scanPulseTarget={scanPulseTarget}
       />
       <TechnicianAvatar
         technician={technician}
         appearance={appearance}
         position={playerPosition}
+        facing={facing}
+        isMoving={isMoving}
       />
+      <ScannerReticle position={reticlePos} active={Boolean(nearby && techVisionEnabled)} />
       <TechVisionOverlay />
-      <CameraReset resetKey={cameraResetKey} playerPosition={playerPosition} />
-      <OrbitControls
-        ref={controlsRef}
-        enablePan={false}
-        enableZoom
-        minPolarAngle={0.3}
-        maxPolarAngle={Math.PI / 2.2}
-        minDistance={6}
-        maxDistance={16}
-        target={[playerPosition[0], 0, playerPosition[2]]}
+      <PlayerController
+        onMove={handleMove}
+        onFacingChange={handleFacingChange}
+        onMovingChange={handleMovingChange}
+        cameraBasisRef={cameraBasisRef}
+      />
+      <FollowCamera
+        playerPosition={playerPosition}
+        playerFacing={facing}
+        resetKey={cameraResetKey}
       />
     </>
   );
@@ -140,17 +163,21 @@ export default function HVACWorld({
   onScan,
   techVisionEnabled,
   scannedTargets,
+  scanPulseTarget,
   technician,
   appearance,
   cameraResetKey,
+  onReady,
+  cameraBasisRef,
 }) {
   const canvasStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
 
   return (
-    <div className="world-canvas">
+    <div className={`world-canvas ${techVisionEnabled ? 'tech-vision-active' : ''}`}>
       <TechVisionProvider enabled={techVisionEnabled}>
         <Canvas shadows camera={DEFAULT_CAMERA} style={canvasStyle}>
           <color attach="background" args={['#87CEEB']} />
+          <fog attach="fog" args={['#b6d4ea', 22, 48]} />
           <WorldContent
             equipmentHealth={equipmentHealth}
             playerPosition={playerPosition}
@@ -160,9 +187,12 @@ export default function HVACWorld({
             onScan={onScan}
             techVisionEnabled={techVisionEnabled}
             scannedTargets={scannedTargets}
+            scanPulseTarget={scanPulseTarget}
             technician={technician}
             appearance={appearance}
             cameraResetKey={cameraResetKey}
+            onReady={onReady}
+            cameraBasisRef={cameraBasisRef}
           />
         </Canvas>
       </TechVisionProvider>
