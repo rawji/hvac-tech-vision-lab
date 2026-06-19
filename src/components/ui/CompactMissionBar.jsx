@@ -4,23 +4,26 @@ export default function CompactMissionBar({
   techVisionEnabled,
   activeTarget,
   selectedTargetId,
+  isNavigating,
 }) {
   if (!mission) return null;
 
-  const selectionHint = activeTarget?.inRange
-    ? activeTarget.label
-    : selectedTargetId
-      ? 'Walk to selected equipment'
-      : null;
+  const selectionHint = isNavigating
+    ? 'Walking…'
+    : activeTarget?.inRange
+      ? activeTarget.label
+      : selectedTargetId
+        ? 'Heading to equipment'
+        : 'Click equipment or ground to move';
 
   return (
     <div className="compact-mission-bar">
       <div className="compact-mission-copy">
         <p className="compact-objective">{mission.title}</p>
-        {!selectionHint && <p className="compact-subline">{mission.objective}</p>}
+        <p className="compact-subline">{mission.objective}</p>
       </div>
       <div className="compact-stats">
-        {selectionHint && <span className="compact-selection">{selectionHint}</span>}
+        <span className="compact-selection">{selectionHint}</span>
         <span className={techVisionEnabled ? 'vision-on' : ''}>
           Tech Vision {techVisionEnabled ? 'ON' : 'OFF'}
         </span>

@@ -140,6 +140,32 @@ export const scanDefinitions = {
     ],
   },
 
+  disconnect: {
+    id: 'disconnect',
+    label: 'Disconnect',
+    title: 'DISCONNECT STATUS',
+    fields: (health) => [
+      { label: 'Handle position', value: health.contactor === 'closed' ? 'Pulled in — line power present' : 'Pulled out', category: 'info' },
+      { label: 'Line voltage', value: '240V present', category: 'info' },
+      { label: 'Outdoor unit power', value: health.contactor === 'closed' ? 'Energized' : 'Off', category: 'info' },
+    ],
+    observedConditions: () => [
+      { condition: 'Outdoor disconnect supplying power', possibleCauses: ['Normal line power', 'Contactor downstream closed'] },
+    ],
+  },
+
+  serviceVan: {
+    id: 'serviceVan',
+    label: 'Service Van',
+    title: 'SERVICE VAN NOTES',
+    fields: () => [
+      { label: 'Work order', value: 'No cooling — weak temperature split', category: 'info' },
+      { label: 'Customer report', value: 'System runs but house not cooling well', category: 'info' },
+      { label: 'Priority', value: 'Same-day service', category: 'info' },
+    ],
+    observedConditions: () => [],
+  },
+
   contactor: {
     id: 'contactor',
     label: 'Contactor',

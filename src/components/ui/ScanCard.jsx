@@ -8,7 +8,14 @@ function FieldRow({ field }) {
   );
 }
 
-export default function ScanCard({ scanResult, interactionMode, onClose }) {
+export default function ScanCard({
+  scanResult,
+  interactionMode,
+  onClose,
+  techVisionEnabled,
+  onScan,
+  onViewNotes,
+}) {
   if (!scanResult) return null;
 
   const isInspect = interactionMode === 'inspect';
@@ -33,9 +40,25 @@ export default function ScanCard({ scanResult, interactionMode, onClose }) {
 
       <p className={`scan-mode-note ${isInspect ? 'inspect-note' : 'scan-note'}`}>
         {isInspect
-          ? 'Visual inspection — enable Tech Vision and scan to log diagnostic clues.'
+          ? 'Visual inspection complete — scan with Tech Vision to log diagnostic clues.'
           : 'Diagnostic scan logged — review symptoms and possible causes below.'}
       </p>
+
+      <div className="scan-card-actions">
+        {isInspect && (
+          <button
+            type="button"
+            className={`btn btn-small ${techVisionEnabled ? 'btn-accent' : 'disabled'}`}
+            onClick={() => (techVisionEnabled ? onScan?.(scanResult.id) : null)}
+            disabled={!techVisionEnabled}
+          >
+            Scan
+          </button>
+        )}
+        <button type="button" className="btn btn-small secondary" onClick={() => onViewNotes?.(scanResult.id)}>
+          View Notes
+        </button>
+      </div>
 
       <div className="clipboard-divider" />
 
@@ -63,7 +86,7 @@ export default function ScanCard({ scanResult, interactionMode, onClose }) {
       )}
 
       <footer className="clipboard-footer">
-        {isInspect ? 'Record notes before scanning.' : 'Clue candidates recorded — reason before final diagnosis.'}
+        {isInspect ? 'Use Scan to record clues for diagnosis.' : 'Clue candidates recorded — reason before final diagnosis.'}
       </footer>
     </div>
   );

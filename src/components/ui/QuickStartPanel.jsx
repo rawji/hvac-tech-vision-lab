@@ -7,16 +7,16 @@ export default function QuickStartPanel() {
           <strong>Mission:</strong> Customer reports weak cooling — investigate and find the likely cause.
         </li>
         <li>
-          <strong>Move:</strong> <kbd>WASD</kbd> or arrow keys toward the house or outdoor condenser.
+          <strong>Move:</strong> Click the yard, path, or any equipment to walk there automatically.
         </li>
         <li>
-          <strong>Inspect:</strong> Stand near equipment and press <kbd>E</kbd>.
+          <strong>Inspect:</strong> When you arrive, the inspection card opens — use on-screen actions.
         </li>
         <li>
-          <strong>Tech Vision:</strong> Press <kbd>V</kbd> or use the Diagnostic Scanner button.
+          <strong>Tech Vision:</strong> Tap the Tech Vision button before scanning for clues.
         </li>
         <li>
-          <strong>Scan:</strong> With Tech Vision ON, stand near a component and press <kbd>F</kbd>.
+          <strong>Scan:</strong> Choose Scan from the action menu with Tech Vision ON.
         </li>
         <li>
           <strong>Diagnose:</strong> Scan at least two components, choose a cause, and submit.

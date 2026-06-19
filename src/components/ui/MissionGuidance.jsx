@@ -7,22 +7,22 @@ const STEPS = [
   {
     id: 2,
     label: 'Walk to equipment',
-    hint: 'Use WASD toward the thermostat, air handler, or outdoor condenser.',
+    hint: 'Click the yard, path, or any equipment to walk there automatically.',
   },
   {
     id: 3,
     label: 'Inspect components',
-    hint: 'Stand close and press E for a basic equipment reading.',
+    hint: 'When you arrive, the inspection card opens — use on-screen actions.',
   },
   {
     id: 4,
     label: 'Toggle Tech Vision',
-    hint: 'Press V or click Diagnostic Scanner for the diagnostic overlay.',
+    hint: 'Tap Tech Vision or the Diagnostic Scanner button for the overlay.',
   },
   {
     id: 5,
     label: 'Scan diagnostic clues',
-    hint: 'With Tech Vision ON, press F near equipment to log clues.',
+    hint: 'With Tech Vision ON, choose Scan from the action menu near equipment.',
   },
   {
     id: 6,

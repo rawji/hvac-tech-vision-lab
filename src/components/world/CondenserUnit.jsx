@@ -101,7 +101,7 @@ export default function CondenserUnit({
           lines={[
             'PRESS: ELEVATED',
             'AIRFLOW: RESTRICTED',
-            'Review scan card for clues',
+            'Scan with Tech Vision for clues',
           ]}
           position={[0, 2.1, 0.5]}
         />

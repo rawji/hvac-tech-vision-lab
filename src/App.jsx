@@ -8,10 +8,10 @@ import CompactMissionBar from './components/ui/CompactMissionBar.jsx';
 import WorldControlsOverlay from './components/ui/WorldControlsOverlay.jsx';
 import DiagnosticScannerButton from './components/ui/DiagnosticScannerButton.jsx';
 import ScanCard from './components/ui/ScanCard.jsx';
+import EquipmentActionMenu from './components/ui/EquipmentActionMenu.jsx';
+import VanMenu from './components/ui/VanMenu.jsx';
 import DiagnosisPanel from './components/ui/DiagnosisPanel.jsx';
 import FeedbackPanel from './components/ui/FeedbackPanel.jsx';
-import InteractionPrompt from './components/interactions/InteractionPrompt.jsx';
-import TouchMovePad from './components/interactions/TouchMovePad.jsx';
 import LoadingSplash from './components/ui/LoadingSplash.jsx';
 import ClueToast from './components/ui/ClueToast.jsx';
 import MuteToggle from './components/ui/MuteToggle.jsx';
@@ -26,8 +26,6 @@ import {
 import { evaluateDiagnosis, getDiagnosisHint } from './logic/diagnosisEvaluator.js';
 import { shouldDismissQuickStart } from './logic/clueToast.js';
 import { useTechVisionToggle } from './components/interactions/useKeyboardControls.js';
-import { useTouchMovement } from './components/interactions/useTouchMovement.js';
-import { applyMovementDelta } from './logic/worldBounds.js';
 import { useLabAudio } from './hooks/useLabAudio.js';
 import { setCondenserHumActive } from './logic/labAudio.js';
 
@@ -40,6 +38,7 @@ const CONDENSER_IDS = new Set([
   'capacitor',
   'fanMotor',
   'contactor',
+  'disconnect',
 ]);
 
 function isNearCondenser(playerPosition, nearbyTarget) {
@@ -52,11 +51,11 @@ export default function App() {
   const [state, dispatch] = useReducer(missionReducer, initialMissionState);
   const [worldReady, setWorldReady] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [actionMenuTargetId, setActionMenuTargetId] = useState(null);
+  const [vanMenuOpen, setVanMenuOpen] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const mission = getDefaultMission();
-  const posRef = useRef(state.playerPosition);
-  const cameraBasisRef = useRef({ forward: [0, -1], right: [1, 0] });
   const prevNearbyId = useRef(null);
-  posRef.current = state.playerPosition;
 
   const {
     muted,
@@ -178,6 +177,10 @@ export default function App() {
       if (e.code === 'Escape') {
         if (state.activeScanResult) {
           dispatch({ type: 'CLEAR_SCAN' });
+        } else if (vanMenuOpen) {
+          setVanMenuOpen(false);
+        } else if (actionMenuTargetId) {
+          setActionMenuTargetId(null);
         } else if (sidebarOpen) {
           setSidebarOpen(false);
         }
@@ -186,7 +189,7 @@ export default function App() {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [state.phase, state.activeScanResult, sidebarOpen]);
+  }, [state.phase, state.activeScanResult, sidebarOpen, vanMenuOpen, actionMenuTargetId]);
 
   const handleStart = () => dispatch({ type: 'SET_PHASE', phase: APP_PHASE.TECHNICIAN_SELECT });
 
@@ -203,25 +206,12 @@ export default function App() {
     dispatch({ type: 'SET_PLAYER_POSITION', position });
   }, []);
 
-  const handleMoveDelta = useCallback(([dx, dz]) => {
-    dispatch({
-      type: 'SET_PLAYER_POSITION',
-      position: applyMovementDelta(posRef.current, dx, dz),
-    });
-  }, []);
-
-  const { setDirection } = useTouchMovement(
-    handleMoveDelta,
-    state.phase === APP_PHASE.MISSION,
-    cameraBasisRef
-  );
-
   const handleActiveTargetChange = useCallback((activeTarget) => {
     dispatch({ type: 'SET_NEARBY_TARGET', target: activeTarget });
   }, []);
 
   const handleSelectTarget = useCallback((targetId) => {
-    dispatch({ type: 'SELECT_TARGET', targetId });
+    dispatch({ type: 'SELECT_TARGET', targetId: targetId ?? null });
   }, []);
 
   const handleScanBlocked = useCallback(() => {
@@ -238,6 +228,7 @@ export default function App() {
         targetId,
         equipmentHealth: mission.equipmentHealth,
       });
+      setActionMenuTargetId(targetId);
       setSidebarOpen(false);
     },
     [mission.equipmentHealth]
@@ -255,10 +246,32 @@ export default function App() {
         equipmentHealth: mission.equipmentHealth,
       });
       playIfUnlocked(() => sounds.scanComplete());
+      setActionMenuTargetId(targetId);
       setSidebarOpen(false);
     },
     [mission.equipmentHealth, state.techVisionEnabled, playIfUnlocked, sounds, handleScanBlocked]
   );
+
+  const handleViewNotes = useCallback(
+    (targetId) => {
+      dispatch({
+        type: 'INSPECT_TARGET',
+        targetId,
+        equipmentHealth: mission.equipmentHealth,
+      });
+      setVanMenuOpen(false);
+    },
+    [mission.equipmentHealth]
+  );
+
+  const handleArrivedAtTarget = useCallback((targetId) => {
+    setActionMenuTargetId(targetId);
+  }, []);
+
+  const handleVanArrival = useCallback(() => {
+    setVanMenuOpen(true);
+    setActionMenuTargetId(null);
+  }, []);
 
   const handleSubmitDiagnosis = () => {
     playIfUnlocked(() => sounds.diagnosisSubmit());
@@ -317,6 +330,7 @@ export default function App() {
         techVisionEnabled={state.techVisionEnabled}
         activeTarget={state.nearbyTarget}
         selectedTargetId={state.selectedTargetId}
+        isNavigating={isNavigating}
       />
 
       <div className="mission-layout world-first">
@@ -331,6 +345,8 @@ export default function App() {
               onInspect={handleInspect}
               onScan={handleScan}
               onScanBlocked={handleScanBlocked}
+              onVanArrival={handleVanArrival}
+              onArrivedAtTarget={handleArrivedAtTarget}
               techVisionEnabled={state.techVisionEnabled}
               scannedTargets={state.scannedTargets}
               inspectedTargets={state.inspectedTargets}
@@ -341,7 +357,7 @@ export default function App() {
               appearance={state.selectedAppearance}
               cameraResetKey={state.cameraResetKey}
               onReady={handleWorldReady}
-              cameraBasisRef={cameraBasisRef}
+              onNavigatingChange={setIsNavigating}
             />
           </Suspense>
           {!worldReady && (
@@ -350,18 +366,32 @@ export default function App() {
             </div>
           )}
           <WorldControlsOverlay
-            activeTarget={state.nearbyTarget}
-            selectedTargetId={state.selectedTargetId}
             techVisionEnabled={state.techVisionEnabled}
             onToggleTechVision={toggleTechVision}
-            onInspect={handleInspect}
-            onScan={handleScan}
             onResetView={handleResetView}
             muted={muted}
             onToggleMute={toggleMute}
             interactionNotice={state.interactionNotice}
+            isNavigating={isNavigating}
+            activeTarget={state.nearbyTarget}
           />
-          <TouchMovePad setDirection={setDirection} />
+          <EquipmentActionMenu
+            targetId={state.activeScanResult ? null : actionMenuTargetId}
+            techVisionEnabled={state.techVisionEnabled}
+            onInspect={handleInspect}
+            onScan={handleScan}
+            onViewNotes={handleViewNotes}
+            onClose={() => setActionMenuTargetId(null)}
+          />
+          {vanMenuOpen && (
+            <div className="van-menu-overlay">
+              <VanMenu
+                mission={mission}
+                onClose={() => setVanMenuOpen(false)}
+                onViewNotes={handleViewNotes}
+              />
+            </div>
+          )}
           <ClueToast
             message={state.clueToast}
             onDismiss={() => dispatch({ type: 'CLEAR_CLUE_TOAST' })}
@@ -377,6 +407,9 @@ export default function App() {
                 scanResult={state.activeScanResult}
                 interactionMode={state.interactionMode}
                 onClose={() => dispatch({ type: 'CLEAR_SCAN' })}
+                techVisionEnabled={state.techVisionEnabled}
+                onScan={handleScan}
+                onViewNotes={handleViewNotes}
               />
             </div>
           )}
@@ -395,12 +428,6 @@ export default function App() {
           {!immersiveMode && <MissionPanel mission={mission} />}
           {showQuickStart && <QuickStartPanel />}
           <MissionGuidance state={state} />
-          <InteractionPrompt
-            target={state.nearbyTarget}
-            techVisionEnabled={state.techVisionEnabled}
-            onInspect={handleInspect}
-            onScan={handleScan}
-          />
           {showDiagnosis && (
             <div className="diagnosis-drawer">
               <DiagnosisPanel

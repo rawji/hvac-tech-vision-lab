@@ -3,21 +3,18 @@ export default function ControlsHelpPanel() {
     <details className="panel controls-help-panel">
       <summary>Controls &amp; Help</summary>
       <ul className="controls-list">
-        <li><kbd>WASD</kbd> / <kbd>Arrow keys</kbd> — move technician (camera-relative)</li>
-        <li><kbd>Right-drag</kbd> — gently adjust camera angle</li>
-        <li>Click equipment — select / focus target</li>
-        <li><kbd>E</kbd> — inspect nearby or selected equipment</li>
-        <li><kbd>F</kbd> — diagnostic scan when Tech Vision is ON</li>
-        <li><kbd>V</kbd> — toggle Tech Vision</li>
-        <li><kbd>Esc</kbd> — close scan card or hide mission details</li>
-        <li>Touch pad — move on mobile (camera-relative)</li>
-        <li>Reset View — restore player position and camera</li>
+        <li>Click ground or path — walk to that spot</li>
+        <li>Click equipment — walk over and open inspection</li>
+        <li>Drag — rotate camera</li>
+        <li>Scroll / pinch — zoom camera</li>
+        <li>Tap actions — Inspect, Scan, View Notes</li>
+        <li>Tech Vision button — enable diagnostic scanning</li>
+        <li><kbd>Esc</kbd> — close panels</li>
       </ul>
       <div className="help-callout">
-        <p><strong>Inspect vs Scan</strong></p>
-        <p>Inspect works anytime and shows component readings.</p>
-        <p>Scan with Tech Vision ON records diagnostic clues toward your diagnosis.</p>
-        <p>Tech Vision reveals clues and possible causes — not the final answer.</p>
+        <p><strong>Optional keyboard shortcuts</strong></p>
+        <p><kbd>V</kbd> toggle Tech Vision · <kbd>E</kbd> inspect · <kbd>F</kbd> scan when nearby</p>
+        <p>Inspect shows component readings. Scan with Tech Vision ON records diagnostic clues.</p>
       </div>
     </details>
   );

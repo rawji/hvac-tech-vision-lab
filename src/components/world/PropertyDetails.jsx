@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import OutlinedBox from './OutlinedBox.jsx';
 import ShrubSway from './ShrubSway.jsx';
 import VanMarkerLight from './VanMarkerLight.jsx';
+import WorldInteractable from './WorldInteractable.jsx';
 import { PALETTE } from '../../data/worldPalette.js';
+import { DISCONNECT_TARGET, VAN_TARGET } from '../../logic/navigation.js';
 
 const SHRUB_POSITIONS = [
   [-1.5, 0, 2.5],
@@ -17,7 +19,12 @@ const FENCE_SEGMENTS = [
   { pos: [-4, 0.4, 4], size: [4, 0.8, 0.15] },
 ];
 
-export default function PropertyDetails() {
+export default function PropertyDetails({
+  onNavigate,
+  equipmentState,
+  selectedTargetId,
+  proximityId,
+}) {
   const lineSetPoints = useMemo(
     () => [
       [-4.2, 0.8, -0.5],
@@ -55,6 +62,16 @@ export default function PropertyDetails() {
           <meshStandardMaterial color="#93c5fd" emissive="#1e3a5f" emissiveIntensity={0.18} />
         </mesh>
         <VanMarkerLight position={[0, 1.55, 2.1]} />
+        <WorldInteractable
+          id={VAN_TARGET.id}
+          label={VAN_TARGET.label}
+          position={[0, 0.85, 0]}
+          size={[2.4, 1.8, 4.6]}
+          color={PALETTE.vanBody}
+          onNavigate={onNavigate}
+          isSelected={selectedTargetId === VAN_TARGET.id}
+          isNearby={proximityId === VAN_TARGET.id}
+        />
       </group>
 
       <group position={[1.1, 0, 5.2]}>
@@ -112,16 +129,16 @@ export default function PropertyDetails() {
         );
       })}
 
-      <OutlinedBox
-        args={[0.35, 0.55, 0.2]}
+      <WorldInteractable
+        id={DISCONNECT_TARGET.id}
+        label={DISCONNECT_TARGET.label}
         position={[3.2, 0.55, -0.2]}
+        size={[0.35, 0.55, 0.2]}
         color="#f5f5f4"
-        castShadow
+        onNavigate={onNavigate}
+        isSelected={selectedTargetId === DISCONNECT_TARGET.id}
+        isNearby={proximityId === DISCONNECT_TARGET.id}
       />
-      <mesh position={[3.2, 0.55, -0.08]}>
-        <boxGeometry args={[0.25, 0.4, 0.06]} />
-        <meshStandardMaterial color="#44403c" />
-      </mesh>
 
       <OutlinedBox args={[0.9, 1.5, 0.1]} position={[-4.8, 0.75, -1.8]} color="#57534e" roughness={0.8} />
     </group>

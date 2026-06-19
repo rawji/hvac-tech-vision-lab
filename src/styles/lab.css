@@ -921,6 +921,93 @@ h3 {
   animation: scan-card-in 0.28s ease-out;
 }
 
+.scan-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.35rem 0 0.15rem;
+  flex-wrap: wrap;
+}
+
+.equipment-action-menu {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 13;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid var(--surface-2);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  min-width: min(92vw, 420px);
+  animation: scan-card-in 0.24s ease-out;
+}
+
+.action-menu-title {
+  margin: 0 0 0.45rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.action-menu-buttons {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.action-menu-btn {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.88rem;
+}
+
+.action-menu-close {
+  margin-left: auto;
+}
+
+.van-menu-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(2, 6, 23, 0.45);
+}
+
+.van-menu {
+  max-width: 420px;
+  width: 100%;
+}
+
+.van-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.van-menu-copy {
+  color: var(--muted);
+  margin: 0.35rem 0 0.75rem;
+}
+
+.van-menu-list {
+  margin: 0 0 1rem;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.van-menu-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 @keyframes scan-card-in {
   from {
     opacity: 0;
@@ -940,7 +1027,7 @@ h3 {
 
 .compact-selection {
   color: var(--accent);
-  max-width: 8rem;
+  max-width: 14rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

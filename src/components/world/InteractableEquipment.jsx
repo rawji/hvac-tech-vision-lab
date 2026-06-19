@@ -156,8 +156,8 @@ export default function InteractableEquipment({
 
       <EquipmentLabel
         label={
-          isSelected && !isNearby
-            ? `${label} (selected)`
+          isSelected
+            ? `${label} · click to go`
             : techVisionEnabled && isNearby
               ? `${label} · scannable`
               : label

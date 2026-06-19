@@ -2,11 +2,15 @@ import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const DISTANCE = 8.5;
+const DEFAULT_DISTANCE = 8.5;
+const MIN_DISTANCE = 5.5;
+const MAX_DISTANCE = 14;
 const HEIGHT = 6.5;
 const LOOK_AT_HEIGHT = 1.1;
 const DRAG_SENSITIVITY = 0.004;
-const MAX_DRAG = 1.0;
+const MAX_DRAG = 1.2;
+const DRAG_THRESHOLD = 8;
+const ZOOM_SENSITIVITY = 0.55;
 
 export default function FollowCamera({
   playerPosition,
@@ -14,18 +18,22 @@ export default function FollowCamera({
   resetKey,
   focusPosition = null,
   enabled = true,
+  pointerDragRef,
 }) {
   const { camera, gl } = useThree();
   const yaw = useRef(Math.PI);
   const dragOffset = useRef(0);
+  const distance = useRef(DEFAULT_DISTANCE);
   const dragging = useRef(false);
   const lastPointerX = useRef(0);
   const lookTarget = useRef(new THREE.Vector3());
   const desiredPos = useRef(new THREE.Vector3());
   const focusVec = useRef(new THREE.Vector3());
+  const pinchStart = useRef(null);
 
   useEffect(() => {
     dragOffset.current = 0;
+    distance.current = DEFAULT_DISTANCE;
     yaw.current = playerFacing + Math.PI;
     lookTarget.current.set(playerPosition[0], LOOK_AT_HEIGHT, playerPosition[2]);
     updateCameraPosition();
@@ -35,9 +43,9 @@ export default function FollowCamera({
   function updateCameraPosition() {
     const effectiveYaw = yaw.current + dragOffset.current;
     desiredPos.current.set(
-      playerPosition[0] + Math.sin(effectiveYaw) * DISTANCE,
+      playerPosition[0] + Math.sin(effectiveYaw) * distance.current,
       HEIGHT,
-      playerPosition[2] + Math.cos(effectiveYaw) * DISTANCE
+      playerPosition[2] + Math.cos(effectiveYaw) * distance.current
     );
   }
 
@@ -47,6 +55,10 @@ export default function FollowCamera({
     const targetYaw = playerFacing + Math.PI;
     const followStrength = dragging.current ? 0 : 1 - Math.exp(-5 * delta);
     yaw.current += (targetYaw - yaw.current) * followStrength;
+
+    if (!dragging.current) {
+      dragOffset.current += (0 - dragOffset.current) * (1 - Math.exp(-3 * delta));
+    }
 
     const playerLook = new THREE.Vector3(playerPosition[0], LOOK_AT_HEIGHT, playerPosition[2]);
 
@@ -67,16 +79,31 @@ export default function FollowCamera({
   useEffect(() => {
     if (!enabled) return undefined;
     const canvas = gl.domElement;
+    const dragRef = pointerDragRef?.current;
 
     const onContextMenu = (e) => e.preventDefault();
 
     const onPointerDown = (e) => {
-      if (e.button !== 2) return;
+      if (e.button !== 0) return;
+      if (e.target !== canvas) return;
+      if (dragRef) {
+        dragRef.pointerDown = true;
+        dragRef.didDrag = false;
+        dragRef.startX = e.clientX;
+        dragRef.startY = e.clientY;
+      }
       dragging.current = true;
       lastPointerX.current = e.clientX;
     };
 
     const onPointerMove = (e) => {
+      if (dragRef?.pointerDown) {
+        const dx = e.clientX - dragRef.startX;
+        const dy = e.clientY - dragRef.startY;
+        if (Math.hypot(dx, dy) > (dragRef.dragThreshold ?? DRAG_THRESHOLD)) {
+          dragRef.didDrag = true;
+        }
+      }
       if (!dragging.current) return;
       const dx = e.clientX - lastPointerX.current;
       lastPointerX.current = e.clientX;
@@ -85,21 +112,95 @@ export default function FollowCamera({
     };
 
     const onPointerUp = (e) => {
-      if (e.button === 2) dragging.current = false;
+      if (e.button === 0) {
+        dragging.current = false;
+        if (dragRef) dragRef.pointerDown = false;
+      }
+    };
+
+    const onWheel = (e) => {
+      e.preventDefault();
+      distance.current = THREE.MathUtils.clamp(
+        distance.current + e.deltaY * 0.012 * ZOOM_SENSITIVITY,
+        MIN_DISTANCE,
+        MAX_DISTANCE
+      );
+    };
+
+    const onTouchStart = (e) => {
+      if (e.touches.length === 2) {
+        const [a, b] = e.touches;
+        pinchStart.current = {
+          distance: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY),
+          camDistance: distance.current,
+        };
+      } else if (e.touches.length === 1) {
+        dragging.current = true;
+        lastPointerX.current = e.touches[0].clientX;
+        if (dragRef) {
+          dragRef.pointerDown = true;
+          dragRef.didDrag = false;
+          dragRef.startX = e.touches[0].clientX;
+          dragRef.startY = e.touches[0].clientY;
+        }
+      }
+    };
+
+    const onTouchMove = (e) => {
+      if (e.touches.length === 2 && pinchStart.current) {
+        e.preventDefault();
+        const [a, b] = e.touches;
+        const dist = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+        const scale = dist / pinchStart.current.distance;
+        distance.current = THREE.MathUtils.clamp(
+          pinchStart.current.camDistance / scale,
+          MIN_DISTANCE,
+          MAX_DISTANCE
+        );
+        return;
+      }
+      if (e.touches.length === 1 && dragging.current) {
+        const touch = e.touches[0];
+        if (dragRef?.pointerDown) {
+          const dx = touch.clientX - dragRef.startX;
+          const dy = touch.clientY - dragRef.startY;
+          if (Math.hypot(dx, dy) > (dragRef.dragThreshold ?? DRAG_THRESHOLD)) {
+            dragRef.didDrag = true;
+          }
+        }
+        const dx = touch.clientX - lastPointerX.current;
+        lastPointerX.current = touch.clientX;
+        dragOffset.current -= dx * DRAG_SENSITIVITY;
+        dragOffset.current = THREE.MathUtils.clamp(dragOffset.current, -MAX_DRAG, MAX_DRAG);
+      }
+    };
+
+    const onTouchEnd = () => {
+      dragging.current = false;
+      pinchStart.current = null;
+      if (dragRef) dragRef.pointerDown = false;
     };
 
     canvas.addEventListener('contextmenu', onContextMenu);
     canvas.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
+    canvas.addEventListener('touchstart', onTouchStart, { passive: true });
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    canvas.addEventListener('touchend', onTouchEnd);
 
     return () => {
       canvas.removeEventListener('contextmenu', onContextMenu);
       canvas.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
+      canvas.removeEventListener('wheel', onWheel);
+      canvas.removeEventListener('touchstart', onTouchStart);
+      canvas.removeEventListener('touchmove', onTouchMove);
+      canvas.removeEventListener('touchend', onTouchEnd);
     };
-  }, [enabled, gl.domElement]);
+  }, [enabled, gl.domElement, pointerDragRef]);
 
   return null;
 }
