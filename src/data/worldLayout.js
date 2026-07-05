@@ -15,6 +15,14 @@ export const SCENE = {
   disconnect: [8.8, 0.55, 1.2],
 };
 
+/** Angle (radians) for the technician to face the property center on spawn. */
+export function getInitialPlayerFacing() {
+  const [px, , pz] = DEFAULT_PLAYER_POSITION;
+  const focusX = (SCENE.house[0] + SCENE.condenser[0]) / 2;
+  const focusZ = (SCENE.house[2] + SCENE.condenser[2]) / 2;
+  return Math.atan2(focusX - px, focusZ - pz);
+}
+
 export const INTERACTION_POSITIONS = {
   thermostat: [-6, 0, 4.6],
   filter: [-9, 0, 0],

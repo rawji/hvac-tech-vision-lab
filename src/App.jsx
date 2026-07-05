@@ -17,6 +17,7 @@ import ClueToast from './components/ui/ClueToast.jsx';
 import MuteToggle from './components/ui/MuteToggle.jsx';
 import QuickStartPanel from './components/ui/QuickStartPanel.jsx';
 import { getDefaultMission } from './data/missions.js';
+import { SCENE } from './data/worldLayout.js';
 import {
   APP_PHASE,
   initialMissionState,
@@ -44,7 +45,8 @@ const CONDENSER_IDS = new Set([
 function isNearCondenser(playerPosition, nearbyTarget) {
   if (nearbyTarget && CONDENSER_IDS.has(nearbyTarget.id)) return true;
   const [x, , z] = playerPosition;
-  return Math.hypot(x - 4, z + 1) < 4.5;
+  const [cx, , cz] = SCENE.condenser;
+  return Math.hypot(x - cx, z - cz) < 5;
 }
 
 export default function App() {
@@ -101,6 +103,12 @@ export default function App() {
     const timer = setTimeout(() => dispatch({ type: 'CLEAR_CLUE_TOAST' }), 4500);
     return () => clearTimeout(timer);
   }, [state.clueToast]);
+
+  useEffect(() => {
+    if (state.phase !== APP_PHASE.MISSION) return undefined;
+    const timer = setTimeout(() => setWorldReady(true), 8000);
+    return () => clearTimeout(timer);
+  }, [state.phase]);
 
   useEffect(() => {
     if (state.phase !== APP_PHASE.MISSION || !unlocked) return;

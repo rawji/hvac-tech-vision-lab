@@ -1,12 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { getInitialPlayerFacing } from '../../data/worldLayout.js';
 
-const DEFAULT_DISTANCE = 10.5;
+const DEFAULT_DISTANCE = 11.5;
 const MIN_DISTANCE = 7.5;
 const MAX_DISTANCE = 19;
-const HEIGHT = 8.2;
-const LOOK_AT_HEIGHT = 1.28;
+const HEIGHT = 8.4;
+const LOOK_AT_HEIGHT = 1.35;
+const INITIAL_PITCH = 0.07;
 const DRAG_YAW_SENSITIVITY = 0.004;
 const DRAG_PITCH_SENSITIVITY = 0.0014;
 const MAX_ORBIT_PITCH = 0.35;
@@ -59,8 +61,8 @@ export default function FollowCamera({
 
   useEffect(() => {
     userOrbitLocked.current = false;
-    orbitPitch.current = 0;
-    orbitYaw.current = playerFacing + Math.PI;
+    orbitPitch.current = INITIAL_PITCH;
+    orbitYaw.current = getInitialPlayerFacing() + Math.PI;
     distance.current = DEFAULT_DISTANCE;
     swingTargetYaw.current = 0;
     swingTargetPitch.current = 0;

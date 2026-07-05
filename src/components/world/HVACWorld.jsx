@@ -25,6 +25,7 @@ import {
   POINT_ARRIVAL_THRESHOLD,
 } from '../../logic/navigation.js';
 import { PALETTE, NORMAL_LIGHT, TECH_VISION, TONE_MAPPING } from '../../data/worldPalette.js';
+import { getInitialPlayerFacing } from '../../data/worldLayout.js';
 
 export { INTERACTION_TARGETS, NAVIGATION_TARGETS } from '../../data/interactionTargets.js';
 
@@ -32,7 +33,7 @@ const TARGET_POSITIONS = Object.fromEntries(
   INTERACTION_TARGETS.map((t) => [t.id, t.position])
 );
 
-const DEFAULT_CAMERA = { position: [-2, 9.5, 15.5], fov: 42, near: 0.1, far: 120 };
+const DEFAULT_CAMERA = { position: [-4, 10, 14], fov: 44, near: 0.1, far: 120 };
 
 function WorldContent({
   equipmentHealth,
@@ -59,7 +60,7 @@ function WorldContent({
   uiStable = false,
 }) {
   const posRef = useRef(playerPosition);
-  const facingRef = useRef(0);
+  const facingRef = useRef(getInitialPlayerFacing());
   const navigationRef = useRef(null);
   const pointerDragRef = useRef({
     pointerDown: false,
@@ -69,7 +70,7 @@ function WorldContent({
     dragThreshold: 8,
   });
 
-  const [facing, setFacing] = useState(0);
+  const [facing, setFacing] = useState(getInitialPlayerFacing);
   const [isMoving, setIsMoving] = useState(false);
   const [navigation, setNavigation] = useState(null);
 
@@ -375,7 +376,7 @@ export default function HVACWorld({
       <TechVisionProvider enabled={techVisionEnabled}>
         <Canvas shadows camera={DEFAULT_CAMERA} style={canvasStyle} onCreated={handleCanvasCreated}>
           <color attach="background" args={[techVisionEnabled ? '#0b1524' : PALETTE.sky]} />
-          {!techVisionEnabled && <fog attach="fog" args={[PALETTE.fog, 36, 92]} />}
+          {!techVisionEnabled && <fog attach="fog" args={[PALETTE.fog, 48, 110]} />}
           {techVisionEnabled && <fog attach="fog" args={[TECH_VISION.fog, 28, 75]} />}
 
           <WorldContent
