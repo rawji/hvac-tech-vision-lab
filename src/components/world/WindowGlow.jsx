@@ -7,7 +7,7 @@ export default function WindowGlow({ position, size = [1.3, 0.9, 0.08] }) {
 
   useFrame((state) => {
     if (!ref.current) return;
-    const pulse = 0.06 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
+    const pulse = 0.05 + Math.sin(state.clock.elapsedTime * 0.45) * 0.015;
     ref.current.material.emissiveIntensity = pulse;
   });
 
@@ -16,12 +16,12 @@ export default function WindowGlow({ position, size = [1.3, 0.9, 0.08] }) {
       <boxGeometry args={size} />
       <meshStandardMaterial
         color={PALETTE.window}
-        emissive="#fde68a"
-        emissiveIntensity={0.06}
-        roughness={0.15}
-        metalness={0.05}
+        emissive={PALETTE.windowGlow}
+        emissiveIntensity={0.05}
+        roughness={0.12}
+        metalness={0.04}
         transparent
-        opacity={0.88}
+        opacity={0.9}
       />
     </mesh>
   );

@@ -1,3 +1,5 @@
+import { shadeColor } from '../../data/worldPalette.js';
+
 export default function OutlinedBox({
   args,
   position = [0, 0, 0],
@@ -12,21 +14,31 @@ export default function OutlinedBox({
   emissive,
   emissiveIntensity = 0,
   realistic = false,
+  stylized = false,
 }) {
+  const usePremium = realistic || stylized;
+  const rimColor = shadeColor(color, stylized ? 0.18 : 0.12);
+
   return (
     <group position={position} rotation={rotation}>
-      {!realistic && (
+      {!usePremium && (
         <mesh scale={outlineScale}>
           <boxGeometry args={args} />
           <meshBasicMaterial color={outlineColor} />
+        </mesh>
+      )}
+      {stylized && (
+        <mesh scale={1.012} receiveShadow={receiveShadow}>
+          <boxGeometry args={args} />
+          <meshStandardMaterial color={rimColor} roughness={1} metalness={0} />
         </mesh>
       )}
       <mesh castShadow={castShadow} receiveShadow={receiveShadow}>
         <boxGeometry args={args} />
         <meshStandardMaterial
           color={color}
-          roughness={realistic ? Math.min(roughness + 0.08, 1) : roughness}
-          metalness={realistic ? metalness * 0.5 : metalness}
+          roughness={usePremium ? Math.min(roughness + 0.1, 0.98) : roughness}
+          metalness={usePremium ? metalness * 0.35 : metalness}
           emissive={emissive ?? '#000000'}
           emissiveIntensity={emissiveIntensity}
         />

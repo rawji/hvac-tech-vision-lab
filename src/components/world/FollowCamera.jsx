@@ -2,11 +2,11 @@ import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const DEFAULT_DISTANCE = 11;
-const MIN_DISTANCE = 7;
-const MAX_DISTANCE = 20;
-const HEIGHT = 7.5;
-const LOOK_AT_HEIGHT = 1.1;
+const DEFAULT_DISTANCE = 10.5;
+const MIN_DISTANCE = 7.5;
+const MAX_DISTANCE = 19;
+const HEIGHT = 8.2;
+const LOOK_AT_HEIGHT = 1.28;
 const DRAG_YAW_SENSITIVITY = 0.004;
 const DRAG_PITCH_SENSITIVITY = 0.0014;
 const MAX_ORBIT_PITCH = 0.35;
@@ -142,7 +142,7 @@ export default function FollowCamera({
 
     if (focusPosition) {
       focusVec.current.set(focusPosition[0], LOOK_AT_HEIGHT + 0.15, focusPosition[2]);
-      lookTarget.current.copy(playerLook).lerp(focusVec.current, userOrbitLocked.current ? 0.12 : 0.22);
+      lookTarget.current.copy(playerLook).lerp(focusVec.current, userOrbitLocked.current ? 0.1 : 0.28);
     } else {
       lookTarget.current.copy(playerLook);
     }

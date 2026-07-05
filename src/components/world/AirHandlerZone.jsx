@@ -3,6 +3,7 @@ import EquipmentZoneLabel from './EquipmentZoneLabel.jsx';
 import InteractableEquipment from './InteractableEquipment.jsx';
 import OutlinedBox from './OutlinedBox.jsx';
 import { SCENE } from '../../data/worldLayout.js';
+import { PALETTE } from '../../data/worldPalette.js';
 
 export default function AirHandlerZone({ equipmentHealth, onSelect, equipmentState, proximityId }) {
   const atHandler = ['airHandler', 'filter'].includes(proximityId);
@@ -13,8 +14,8 @@ export default function AirHandlerZone({ equipmentHealth, onSelect, equipmentSta
       <OutlinedBox
         args={[1.15, 0.08, 1.05]}
         position={[0, 0.04, 0]}
-        color="#78716c"
-        realistic
+        color={PALETTE.houseShadow}
+        stylized
         receiveShadow
       />
       <InteractableEquipment

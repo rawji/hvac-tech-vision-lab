@@ -17,12 +17,12 @@ const SHRUB_POSITIONS = [
   [15, 0, -5],
 ];
 
-const FENCE_SEGMENTS = [
-  { pos: [-17, 0.55, 0], size: [0.12, 1.05, 28] },
-  { pos: [17, 0.55, 0], size: [0.12, 1.05, 28] },
-  { pos: [0, 0.55, -8.5], size: [34, 1.05, 0.12] },
-  { pos: [-12, 0.55, 14], size: [12, 1.05, 0.12] },
-  { pos: [8, 0.55, 14], size: [18, 1.05, 0.12] },
+const FENCE_POSTS = [
+  [-17, 0, -6],
+  [-17, 0, 0],
+  [-17, 0, 6],
+  [17, 0, -4],
+  [17, 0, 4],
 ];
 
 const TREE_POSITIONS = [
@@ -54,40 +54,47 @@ export default function PropertyDetails({
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-5.5, 0.016, 5.5]}>
-        <planeGeometry args={[2.4, 9]} />
-        <meshStandardMaterial color={PALETTE.path} roughness={0.92} />
+        <planeGeometry args={[2.2, 9]} />
+        <meshStandardMaterial color={PALETTE.path} roughness={0.94} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-2, 0.014, 10.5]}>
-        <planeGeometry args={[4.5, 14]} />
-        <meshStandardMaterial color={PALETTE.driveway} roughness={0.88} />
+        <planeGeometry args={[4.2, 14]} />
+        <meshStandardMaterial color={PALETTE.driveway} roughness={0.9} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.2, 0.015, 10.5]}>
+        <planeGeometry args={[0.12, 13.5]} />
+        <meshStandardMaterial color={PALETTE.drivewayEdge} roughness={0.85} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.013, 14.2]}>
-        <planeGeometry args={[36, 3.2]} />
-        <meshStandardMaterial color="#4b5563" roughness={0.95} />
+        <planeGeometry args={[36, 3]} />
+        <meshStandardMaterial color="#4b5563" roughness={0.96} />
       </mesh>
 
       <group position={SCENE.van}>
+        <OutlinedBox args={[2.35, 0.12, 4.9]} position={[0, 0.06, 0]} color={PALETTE.vanTrim} stylized receiveShadow />
         <OutlinedBox
-          args={[2.4, 1.65, 5]}
-          position={[0, 0.82, 0]}
+          args={[2.3, 1.6, 4.85]}
+          position={[0, 0.86, 0]}
           color={PALETTE.vanBody}
-          realistic
-          roughness={0.55}
+          stylized
+          roughness={0.62}
           castShadow
         />
-        <OutlinedBox args={[2.5, 0.45, 5.1]} position={[0, 0.22, 0]} color={PALETTE.vanTrim} realistic />
-        <mesh position={[0.6, 1.15, 2.15]}>
-          <boxGeometry args={[1.2, 0.75, 0.08]} />
-          <meshStandardMaterial color="#93c5fd" roughness={0.2} metalness={0.15} />
+        <OutlinedBox args={[0.08, 1.55, 4.9]} position={[-0.55, 0.86, 0]} color={PALETTE.vanAccent} stylized />
+        <OutlinedBox args={[2.35, 0.14, 4.95]} position={[0, 0.18, 0]} color={PALETTE.vanTrim} stylized />
+        <OutlinedBox args={[2.4, 0.08, 0.15]} position={[0, 1.62, 2.35]} color="#475569" stylized metalness={0.2} />
+        <mesh position={[0.55, 1.08, 2.05]}>
+          <boxGeometry args={[1.1, 0.68, 0.06]} />
+          <meshStandardMaterial color="#a8c8e8" roughness={0.18} metalness={0.12} transparent opacity={0.92} />
         </mesh>
-        <VanMarkerLight position={[0, 1.65, 2.4]} />
+        <VanMarkerLight position={[0, 1.68, 2.35]} />
         <WorldInteractable
           id={VAN_TARGET.id}
           label={VAN_TARGET.label}
           position={[0, 0.9, 0]}
-          size={[2.6, 2, 5.2]}
+          size={[2.55, 1.95, 5.05]}
           color={PALETTE.vanBody}
           onNavigate={onNavigate}
           pointerDragRef={pointerDragRef}
@@ -96,25 +103,22 @@ export default function PropertyDetails({
         />
       </group>
 
-      <group position={[2.5, 0, 11]}>
-        <OutlinedBox args={[0.65, 0.42, 0.4]} position={[0, 0.21, 0]} color="#78350f" realistic castShadow />
-        <mesh position={[0, 0.48, 0]}>
-          <boxGeometry args={[0.58, 0.08, 0.34]} />
-          <meshStandardMaterial color="#92400e" roughness={0.9} />
-        </mesh>
-      </group>
-
-      {FENCE_SEGMENTS.map((seg) => (
+      {FENCE_POSTS.map((pos) => (
         <OutlinedBox
-          key={seg.pos.join('-')}
-          args={seg.size}
-          position={seg.pos}
-          color={PALETTE.fence}
-          realistic
-          roughness={0.96}
+          key={pos.join('-')}
+          args={[0.14, 1.1, 0.14]}
+          position={[pos[0], 0.55, pos[2]]}
+          color={PALETTE.wood}
+          stylized
           castShadow
         />
       ))}
+
+      <OutlinedBox args={[34, 0.06, 0.08]} position={[0, 0.48, -8.5]} color={PALETTE.fence} stylized />
+      <OutlinedBox args={[0.08, 0.06, 28]} position={[-17, 0.48, 0]} color={PALETTE.fence} stylized />
+      <OutlinedBox args={[0.08, 0.06, 28]} position={[17, 0.48, 0]} color={PALETTE.fence} stylized />
+      <OutlinedBox args={[12, 0.06, 0.08]} position={[-12, 0.48, 14]} color={PALETTE.fence} stylized />
+      <OutlinedBox args={[18, 0.06, 0.08]} position={[8, 0.48, 14]} color={PALETTE.fence} stylized />
 
       {TREE_POSITIONS.map((pos) => (
         <SuburbanTree key={pos.join('-')} position={pos} scale={pos[0] > 0 ? 1.05 : 0.95} />
@@ -122,8 +126,8 @@ export default function PropertyDetails({
 
       {SHRUB_POSITIONS.map((pos) => (
         <group key={pos.join('-')}>
-          <MulchBed position={pos} radius={0.75} />
-          <ShrubSway position={pos} scale={1.15} realistic />
+          <MulchBed position={pos} radius={0.7} />
+          <ShrubSway position={pos} scale={1.05} stylized />
         </group>
       ))}
 
@@ -140,11 +144,11 @@ export default function PropertyDetails({
         const rotX = Math.asin(dy / len);
         return (
           <mesh key={`line-${i}`} position={[mx, my, mz]} rotation={[rotX, rotY, 0]} castShadow>
-            <cylinderGeometry args={[0.035, 0.035, len, 8]} />
+            <cylinderGeometry args={[0.032, 0.032, len, 8]} />
             <meshStandardMaterial
-              color={i % 2 === 0 ? '#a16207' : '#94a3b8'}
-              metalness={0.45}
-              roughness={0.42}
+              color={i % 2 === 0 ? '#92702a' : '#8fa0ad'}
+              metalness={0.48}
+              roughness={0.38}
             />
           </mesh>
         );
@@ -163,11 +167,11 @@ export default function PropertyDetails({
       />
 
       <OutlinedBox
-        args={[1.1, 1.65, 0.12]}
-        position={[-11.5, 0.82, -1.5]}
+        args={[1.05, 1.55, 0.1]}
+        position={[-11.5, 0.78, -1.5]}
         color="#57534e"
-        realistic
-        roughness={0.85}
+        stylized
+        roughness={0.88}
       />
     </group>
   );

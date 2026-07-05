@@ -56,16 +56,16 @@ export default function InteractableEquipment({
   });
 
   const ringColor = isPulsing
-    ? '#22d3ee'
+    ? '#67e8f9'
     : isSelected
-      ? '#fbbf24'
+      ? '#d4a054'
       : isNearby
-        ? '#38bdf8'
+        ? '#7dd3fc'
         : isScanned
-          ? '#38bdf8'
+          ? '#60a5fa'
           : '#64748b';
 
-  const ringOpacity = highlighted ? 0.95 : isScanned || isInspected ? 0.55 : 0.28;
+  const ringOpacity = highlighted ? 0.72 : isScanned || isInspected ? 0.42 : 0.2;
 
   const emissive = isPulsing
     ? '#38bdf8'
@@ -80,14 +80,14 @@ export default function InteractableEquipment({
             : '#1e293b';
 
   const emissiveIntensity = isPulsing
-    ? 0.5
+    ? 0.32
     : isInspectPulsing
-      ? 0.35
+      ? 0.22
       : highlighted
-        ? 0.38
+        ? 0.24
         : isScanned
-          ? 0.2
-          : 0.06;
+          ? 0.12
+          : 0.04;
 
   const handlePointerOver = (e) => {
     e.stopPropagation();
@@ -121,7 +121,7 @@ export default function InteractableEquipment({
         <meshBasicMaterial
           color={highlighted || isScanned ? ringColor : '#1c1917'}
           transparent
-          opacity={highlighted ? 0.55 : isScanned ? 0.35 : 0.28}
+          opacity={highlighted ? 0.38 : isScanned ? 0.22 : 0.16}
           depthWrite={false}
         />
       </mesh>
@@ -151,8 +151,8 @@ export default function InteractableEquipment({
           color={color}
           emissive={emissive}
           emissiveIntensity={emissiveIntensity}
-          roughness={0.72}
-          metalness={0.08}
+          roughness={0.78}
+          metalness={0.12}
         />
       </mesh>
 
@@ -165,7 +165,7 @@ export default function InteractableEquipment({
               : label
         }
         visible={showLabel}
-        accent={isSelected ? '#fbbf24' : isNearby ? '#38bdf8' : '#94a3b8'}
+        accent={isSelected ? '#d4a054' : isNearby ? '#7dd3fc' : '#94a3b8'}
         y={h / 2 + 0.35}
       />
     </group>

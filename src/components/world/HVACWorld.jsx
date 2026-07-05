@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Sky } from '@react-three/drei';
+import * as THREE from 'three';
 import HouseScene from './HouseScene.jsx';
 import PropertyDetails from './PropertyDetails.jsx';
 import CondenserUnit from './CondenserUnit.jsx';
@@ -10,6 +11,7 @@ import TechnicianAvatar from './TechnicianAvatar.jsx';
 import FollowCamera from './FollowCamera.jsx';
 import NavigationGround from './NavigationGround.jsx';
 import ClickNavigationController from './ClickNavigationController.jsx';
+import ToneMappingSync from './ToneMappingSync.jsx';
 import TechVisionOverlay from '../techVision/TechVisionOverlay.jsx';
 import ScannerReticle from '../techVision/ScannerReticle.jsx';
 import { TechVisionProvider } from '../techVision/TechVisionProvider.jsx';
@@ -22,7 +24,7 @@ import {
   getNavigationTargetById,
   POINT_ARRIVAL_THRESHOLD,
 } from '../../logic/navigation.js';
-import { PALETTE, NORMAL_LIGHT, TECH_VISION } from '../../data/worldPalette.js';
+import { PALETTE, NORMAL_LIGHT, TECH_VISION, TONE_MAPPING } from '../../data/worldPalette.js';
 
 export { INTERACTION_TARGETS, NAVIGATION_TARGETS } from '../../data/interactionTargets.js';
 
@@ -30,7 +32,7 @@ const TARGET_POSITIONS = Object.fromEntries(
   INTERACTION_TARGETS.map((t) => [t.id, t.position])
 );
 
-const DEFAULT_CAMERA = { position: [-2, 9, 16], fov: 46, near: 0.1, far: 120 };
+const DEFAULT_CAMERA = { position: [-2, 9.5, 15.5], fov: 42, near: 0.1, far: 120 };
 
 function WorldContent({
   equipmentHealth,
@@ -239,30 +241,42 @@ function WorldContent({
 
   return (
     <>
+      <ToneMappingSync techVisionEnabled={techVisionEnabled} />
       <ambientLight intensity={techVisionEnabled ? TECH_VISION.ambient : NORMAL_LIGHT.ambient} />
       <directionalLight
         castShadow
-        position={[14, 20, 10]}
-        intensity={techVisionEnabled ? 1.05 : 1.35}
+        position={[12, 22, 8]}
+        intensity={techVisionEnabled ? 1.1 : NORMAL_LIGHT.keyIntensity}
         color={techVisionEnabled ? TECH_VISION.keyLight : NORMAL_LIGHT.keyLight}
         shadow-mapSize={[2048, 2048]}
+        shadow-bias={-0.00015}
         shadow-camera-left={-20}
         shadow-camera-right={20}
         shadow-camera-top={20}
         shadow-camera-bottom={-20}
       />
+      <directionalLight
+        position={[-10, 14, 6]}
+        intensity={techVisionEnabled ? 0.22 : NORMAL_LIGHT.fillIntensity}
+        color={techVisionEnabled ? TECH_VISION.fillLight : NORMAL_LIGHT.fillLight}
+      />
+      <directionalLight
+        position={[0, 10, -16]}
+        intensity={techVisionEnabled ? 0.45 : NORMAL_LIGHT.rimIntensity}
+        color={techVisionEnabled ? TECH_VISION.rimLight : NORMAL_LIGHT.rimLight}
+      />
       <hemisphereLight
         args={[
-          techVisionEnabled ? '#93c5fd' : NORMAL_LIGHT.hemiSky,
-          techVisionEnabled ? '#1e293b' : NORMAL_LIGHT.hemiGround,
-          techVisionEnabled ? 0.32 : 0.42,
+          techVisionEnabled ? '#7cb8ff' : NORMAL_LIGHT.hemiSky,
+          techVisionEnabled ? '#0f172a' : NORMAL_LIGHT.hemiGround,
+          techVisionEnabled ? 0.28 : NORMAL_LIGHT.hemiIntensity,
         ]}
       />
       <Sky
-        sunPosition={[80, 18, 60]}
-        turbidity={techVisionEnabled ? 0.55 : 0.28}
-        rayleigh={techVisionEnabled ? 1.1 : 0.82}
-        mieCoefficient={0.004}
+        sunPosition={techVisionEnabled ? [40, 10, -20] : [70, 16, 50]}
+        turbidity={techVisionEnabled ? 0.65 : 0.22}
+        rayleigh={techVisionEnabled ? 1.25 : 0.88}
+        mieCoefficient={techVisionEnabled ? 0.008 : 0.003}
       />
 
       <HouseScene />
@@ -344,13 +358,25 @@ export default function HVACWorld({
   uiStable = false,
 }) {
   const canvasStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
+  const handleCanvasCreated = useCallback(
+    ({ gl }) => {
+      gl.toneMapping = THREE.ACESFilmicToneMapping;
+      gl.toneMappingExposure = techVisionEnabled
+        ? TONE_MAPPING.techVisionExposure
+        : TONE_MAPPING.normalExposure;
+      gl.shadowMap.enabled = true;
+      gl.shadowMap.type = THREE.PCFSoftShadowMap;
+    },
+    [techVisionEnabled]
+  );
 
   return (
     <div className={`world-canvas ${techVisionEnabled ? 'tech-vision-active' : ''}`}>
       <TechVisionProvider enabled={techVisionEnabled}>
-        <Canvas shadows camera={DEFAULT_CAMERA} style={canvasStyle}>
-          <color attach="background" args={[PALETTE.sky]} />
-          {!techVisionEnabled && <fog attach="fog" args={[PALETTE.fog, 38, 95]} />}
+        <Canvas shadows camera={DEFAULT_CAMERA} style={canvasStyle} onCreated={handleCanvasCreated}>
+          <color attach="background" args={[techVisionEnabled ? '#0b1524' : PALETTE.sky]} />
+          {!techVisionEnabled && <fog attach="fog" args={[PALETTE.fog, 36, 92]} />}
+          {techVisionEnabled && <fog attach="fog" args={[TECH_VISION.fog, 28, 75]} />}
 
           <WorldContent
             equipmentHealth={equipmentHealth}
