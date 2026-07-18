@@ -752,6 +752,13 @@ h3 {
   line-height: 1.5;
 }
 
+.world-error-detail {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--fault) !important;
+  word-break: break-word;
+}
+
 .touch-move-pad {
   position: absolute;
   bottom: 1rem;

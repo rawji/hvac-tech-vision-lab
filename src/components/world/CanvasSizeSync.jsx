@@ -2,36 +2,44 @@ import { useEffect } from 'react';
 import { useThree } from '@react-three/fiber';
 
 /**
- * Firefox sometimes mounts the R3F canvas before the flex layout has a real size,
- * leaving a blank clear-color view until a manual resize. Force a remeasure on mount.
+ * Remeasure after layout settles. Avoids blank views when the flex parent
+ * reports 0×0 on the first frame (seen more often in Firefox).
  */
 export default function CanvasSizeSync() {
-  const { gl, setSize } = useThree();
+  const gl = useThree((s) => s.gl);
+  const setSize = useThree((s) => s.setSize);
+  const invalidate = useThree((s) => s.invalidate);
 
   useEffect(() => {
-    const parent = gl.domElement.parentElement;
-    if (!parent || typeof ResizeObserver === 'undefined') return undefined;
+    const parent = gl?.domElement?.parentElement;
+    if (!parent || typeof setSize !== 'function') return undefined;
 
     const sync = () => {
       const width = parent.clientWidth;
       const height = parent.clientHeight;
-      if (width > 0 && height > 0) {
+      if (width < 2 || height < 2) return;
+      try {
         setSize(width, height);
+        invalidate();
+      } catch {
+        // Ignore resize races during unmount.
       }
     };
 
     sync();
     const frame = requestAnimationFrame(sync);
-    const observer = new ResizeObserver(sync);
-    observer.observe(parent);
+    const timer = setTimeout(sync, 100);
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(sync) : null;
+    observer?.observe(parent);
     window.addEventListener('resize', sync);
 
     return () => {
       cancelAnimationFrame(frame);
-      observer.disconnect();
+      clearTimeout(timer);
+      observer?.disconnect();
       window.removeEventListener('resize', sync);
     };
-  }, [gl, setSize]);
+  }, [gl, setSize, invalidate]);
 
   return null;
 }

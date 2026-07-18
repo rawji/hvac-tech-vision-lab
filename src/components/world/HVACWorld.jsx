@@ -26,16 +26,7 @@ import {
 } from '../../logic/navigation.js';
 import { PALETTE, NORMAL_LIGHT, TECH_VISION, TONE_MAPPING } from '../../data/worldPalette.js';
 import { getInitialPlayerFacing } from '../../data/worldLayout.js';
-
-const CANVAS_GL = {
-  antialias: true,
-  alpha: false,
-  // Firefox often fails "high-performance" contexts; default is more reliable.
-  powerPreference: 'default',
-  failIfMajorPerformanceCaveat: false,
-  stencil: false,
-  depth: true,
-};
+import { createLabRenderer } from './createLabRenderer.js';
 
 function WebGlFallback() {
   return (
@@ -43,9 +34,8 @@ function WebGlFallback() {
       <p className="eyebrow">HVAC Technician World</p>
       <h2>3D view could not start</h2>
       <p>
-        WebGL failed in this browser. In Firefox: turn on hardware acceleration (Settings → General →
-        Performance), disable canvas/fingerprint blockers for this site, then reload. Edge or Chrome
-        also work.
+        WebGL is unavailable in this browser. In Firefox, enable hardware acceleration and disable
+        canvas blockers, or open the page in Edge/Chrome.
       </p>
     </div>
   );
@@ -389,7 +379,6 @@ export default function HVACWorld({
           ? TONE_MAPPING.techVisionExposure
           : TONE_MAPPING.normalExposure;
         gl.setClearColor(techVisionEnabled ? '#0b1524' : PALETTE.sky, 1);
-        // Soft shadows can fail on constrained Firefox contexts; keep basic shadows.
         gl.shadowMap.enabled = true;
         gl.shadowMap.type = THREE.PCFShadowMap;
       } catch (error) {
@@ -405,7 +394,7 @@ export default function HVACWorld({
         <Canvas
           shadows
           dpr={[1, 1.5]}
-          gl={CANVAS_GL}
+          gl={createLabRenderer}
           camera={DEFAULT_CAMERA}
           style={canvasStyle}
           onCreated={handleCanvasCreated}
