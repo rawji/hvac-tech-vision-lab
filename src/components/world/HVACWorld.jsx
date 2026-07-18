@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Sky } from '@react-three/drei';
 import * as THREE from 'three';
 import HouseScene from './HouseScene.jsx';
 import PropertyDetails from './PropertyDetails.jsx';
@@ -12,6 +11,7 @@ import FollowCamera from './FollowCamera.jsx';
 import NavigationGround from './NavigationGround.jsx';
 import ClickNavigationController from './ClickNavigationController.jsx';
 import ToneMappingSync from './ToneMappingSync.jsx';
+import CanvasSizeSync from './CanvasSizeSync.jsx';
 import TechVisionOverlay from '../techVision/TechVisionOverlay.jsx';
 import ScannerReticle from '../techVision/ScannerReticle.jsx';
 import { TechVisionProvider } from '../techVision/TechVisionProvider.jsx';
@@ -26,6 +26,30 @@ import {
 } from '../../logic/navigation.js';
 import { PALETTE, NORMAL_LIGHT, TECH_VISION, TONE_MAPPING } from '../../data/worldPalette.js';
 import { getInitialPlayerFacing } from '../../data/worldLayout.js';
+
+const CANVAS_GL = {
+  antialias: true,
+  alpha: false,
+  // Firefox often fails "high-performance" contexts; default is more reliable.
+  powerPreference: 'default',
+  failIfMajorPerformanceCaveat: false,
+  stencil: false,
+  depth: true,
+};
+
+function WebGlFallback() {
+  return (
+    <div className="world-error" role="alert">
+      <p className="eyebrow">HVAC Technician World</p>
+      <h2>3D view could not start</h2>
+      <p>
+        WebGL failed in this browser. In Firefox: turn on hardware acceleration (Settings → General →
+        Performance), disable canvas/fingerprint blockers for this site, then reload. Edge or Chrome
+        also work.
+      </p>
+    </div>
+  );
+}
 
 export { INTERACTION_TARGETS, NAVIGATION_TARGETS } from '../../data/interactionTargets.js';
 
@@ -242,6 +266,7 @@ function WorldContent({
 
   return (
     <>
+      <CanvasSizeSync />
       <ToneMappingSync techVisionEnabled={techVisionEnabled} />
       <ambientLight intensity={techVisionEnabled ? TECH_VISION.ambient : NORMAL_LIGHT.ambient} />
       <directionalLight
@@ -249,7 +274,7 @@ function WorldContent({
         position={[12, 22, 8]}
         intensity={techVisionEnabled ? 1.1 : NORMAL_LIGHT.keyIntensity}
         color={techVisionEnabled ? TECH_VISION.keyLight : NORMAL_LIGHT.keyLight}
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.00015}
         shadow-camera-left={-20}
         shadow-camera-right={20}
@@ -272,12 +297,6 @@ function WorldContent({
           techVisionEnabled ? '#0f172a' : NORMAL_LIGHT.hemiGround,
           techVisionEnabled ? 0.28 : NORMAL_LIGHT.hemiIntensity,
         ]}
-      />
-      <Sky
-        sunPosition={techVisionEnabled ? [40, 10, -20] : [70, 16, 50]}
-        turbidity={techVisionEnabled ? 0.65 : 0.22}
-        rayleigh={techVisionEnabled ? 1.25 : 0.88}
-        mieCoefficient={techVisionEnabled ? 0.008 : 0.003}
       />
 
       <HouseScene />
@@ -358,15 +377,24 @@ export default function HVACWorld({
   onNavigatingChange,
   uiStable = false,
 }) {
-  const canvasStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
+  const canvasStyle = useMemo(
+    () => ({ width: '100%', height: '100%', display: 'block', touchAction: 'none' }),
+    []
+  );
   const handleCanvasCreated = useCallback(
     ({ gl }) => {
-      gl.toneMapping = THREE.ACESFilmicToneMapping;
-      gl.toneMappingExposure = techVisionEnabled
-        ? TONE_MAPPING.techVisionExposure
-        : TONE_MAPPING.normalExposure;
-      gl.shadowMap.enabled = true;
-      gl.shadowMap.type = THREE.PCFSoftShadowMap;
+      try {
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+        gl.toneMappingExposure = techVisionEnabled
+          ? TONE_MAPPING.techVisionExposure
+          : TONE_MAPPING.normalExposure;
+        gl.setClearColor(techVisionEnabled ? '#0b1524' : PALETTE.sky, 1);
+        // Soft shadows can fail on constrained Firefox contexts; keep basic shadows.
+        gl.shadowMap.enabled = true;
+        gl.shadowMap.type = THREE.PCFShadowMap;
+      } catch (error) {
+        console.warn('WebGL renderer setup warning:', error);
+      }
     },
     [techVisionEnabled]
   );
@@ -374,7 +402,15 @@ export default function HVACWorld({
   return (
     <div className={`world-canvas ${techVisionEnabled ? 'tech-vision-active' : ''}`}>
       <TechVisionProvider enabled={techVisionEnabled}>
-        <Canvas shadows camera={DEFAULT_CAMERA} style={canvasStyle} onCreated={handleCanvasCreated}>
+        <Canvas
+          shadows
+          dpr={[1, 1.5]}
+          gl={CANVAS_GL}
+          camera={DEFAULT_CAMERA}
+          style={canvasStyle}
+          onCreated={handleCanvasCreated}
+          fallback={<WebGlFallback />}
+        >
           <color attach="background" args={[techVisionEnabled ? '#0b1524' : PALETTE.sky]} />
           {!techVisionEnabled && <fog attach="fog" args={[PALETTE.fog, 48, 110]} />}
           {techVisionEnabled && <fog attach="fog" args={[TECH_VISION.fog, 28, 75]} />}

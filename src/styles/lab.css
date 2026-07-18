@@ -718,7 +718,14 @@ h3 {
   position: relative;
   width: 100%;
   height: calc(100vh - 56px);
-  min-height: 400px;
+  min-height: 420px;
+  overflow: hidden;
+}
+
+.world-canvas canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .world-error {
