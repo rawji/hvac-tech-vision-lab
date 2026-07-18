@@ -16,6 +16,7 @@ import LoadingSplash from './components/ui/LoadingSplash.jsx';
 import ClueToast from './components/ui/ClueToast.jsx';
 import MuteToggle from './components/ui/MuteToggle.jsx';
 import QuickStartPanel from './components/ui/QuickStartPanel.jsx';
+import WorldErrorBoundary from './components/ui/WorldErrorBoundary.jsx';
 import { getDefaultMission } from './data/missions.js';
 import { SCENE } from './data/worldLayout.js';
 import {
@@ -344,6 +345,7 @@ export default function App() {
       <div className="mission-layout world-first">
         <main className="world-container">
           <Suspense fallback={<LoadingSplash message="Loading neighborhood scene…" progress={0.4} />}>
+            <WorldErrorBoundary>
             <HVACWorld
               equipmentHealth={mission.equipmentHealth}
               playerPosition={state.playerPosition}
@@ -370,6 +372,7 @@ export default function App() {
                 state.activeScanResult || vanMenuOpen || actionMenuTargetId
               )}
             />
+            </WorldErrorBoundary>
           </Suspense>
           {!worldReady && (
             <div className="loading-overlay">
